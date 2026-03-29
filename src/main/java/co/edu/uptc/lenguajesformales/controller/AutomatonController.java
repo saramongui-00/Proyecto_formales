@@ -39,37 +39,35 @@ public class AutomatonController {
     // AFD DE PRUEBA
     private void setupAutomaton() {
 
-        automaton.setType(AutomatonType.AFD);
+        automaton.setType(AutomatonType.AFN);
 
         // Estados
         automaton.addState("q0");
         automaton.addState("q1");
         automaton.addState("q2");
         automaton.addState("q3");
-        automaton.addState("q4");
 
         // Alfabeto
-        automaton.addSymbol("0");
-        automaton.addSymbol("1");
+        automaton.addSymbol("a");
+        automaton.addSymbol("b");
 
         // Inicial
         automaton.setInitialState("q0");
 
         // Final
-        automaton.addFinalState("q4");
+        automaton.addFinalState("q3");
 
         // Transiciones
-        automaton.addTransition(new Transition("q0", "0", "q1"));
-        automaton.addTransition(new Transition("q1", "0", "q2"));
-        automaton.addTransition(new Transition("q2", "0", "q2"));
-        automaton.addTransition(new Transition("q2", "1", "q3"));
-        automaton.addTransition(new Transition("q3", "1", "q3"));
-        automaton.addTransition(new Transition("q3", "0", "q4"));
-        automaton.addTransition(new Transition("q4", "0", "q2"));
-        automaton.addTransition(new Transition("q4", "1", "q3"));
+        automaton.addTransition(new Transition("q0", "a", "q0"));
+        automaton.addTransition(new Transition("q0", "b", "q0"));
+        automaton.addTransition(new Transition("q0", "a", "q1"));
+        automaton.addTransition(new Transition("q1", "b", "q2"));
+        automaton.addTransition(new Transition("q2", "a", "q3"));
+        automaton.addTransition(new Transition("q3", "a", "q3"));
+        automaton.addTransition(new Transition("q3", "b", "q3"));
         
-        if (!automaton.validateDFA()) {
-            throw new IllegalStateException("AFD inválido: no se pueden evaluar cadenas");
+        if (!automaton.validateAFN()) {
+            throw new IllegalStateException("AFN inválido");
         }
     }
 
@@ -78,19 +76,19 @@ public class AutomatonController {
     private void testEvaluate() {
         view.showMessage("\nEVALUATE");
 
-        showResult("00000");
-        showResult("00100");
-        showResult("1111111");
-        showResult("101010");
-        showResult("011100010");
-        showResult("0011110");
-        showResult("00010");
+        showResult("aba");
+        showResult("ab");
         showResult("");
+        showResult("aaaaaaababaaa");
+        showResult("bababbababa");
+        showResult("bbbbaaaa");
+        showResult("bbb");
+        showResult("aaaaaaab");
     }
 
     private void showResult(String input) {
         try {
-            boolean result = automaton.evaluate(input);
+            boolean result = automaton.evaluateAFN(input);
             view.showMessage(input + " -> " + result);
         } catch (IllegalStateException e) {
             view.showMessage("Error al evaluar '" + input + "': " + e.getMessage());
@@ -100,7 +98,7 @@ public class AutomatonController {
     private void testTrace() {
         view.showMessage("\nTRACE");
         try {
-            List<String> trace = automaton.evaluateWithDetailedTrace("00010");
+            List<String> trace = automaton.evaluateAFDWithDetailedTrace("aba");
             for (String step : trace) {
                 view.showMessage(step);
             }
@@ -111,9 +109,9 @@ public class AutomatonController {
 
     private void testBatch() {
         view.showMessage("\nBATCH");
-        List<String> inputs = List.of("00000", "00100", "1111111", "101010", "011100010", "0011110", "00010");
+        List<String> inputs = List.of("aba", "ab", "", "aaaaaaababaaa", "bababbababa", "bbbbaaaa", "bbb");
         try {
-            Map<String, Boolean> results = automaton.evaluateBatch(inputs);
+            Map<String, Boolean> results = automaton.evaluateBatchAutomaton(inputs);
             for (Map.Entry<String, Boolean> entry : results.entrySet()) {
                 view.showMessage(entry.getKey() + " -> " + entry.getValue());
             }

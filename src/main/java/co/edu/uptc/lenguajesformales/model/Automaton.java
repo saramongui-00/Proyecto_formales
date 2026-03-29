@@ -2,9 +2,13 @@ package co.edu.uptc.lenguajesformales.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+
+//Representa un automata finito (AFD ó AFN)
 public class Automaton {
     
     private AutomatonType type;
@@ -122,81 +126,12 @@ public class Automaton {
         return alphabet.contains(symbol);
     }
 
+    /*Verifica que exista al menos un estado de aceptación */
     public boolean isFinalState(String state){
         return finalStates.contains(state);
     }
 
-    public boolean evaluate(String input){
-        if (input == null) {
-            throw new IllegalArgumentException("La cadena no puede ser null");
-        }
-        if (type != AutomatonType.AFD) {
-            throw new IllegalStateException("El automata no es determinista (AFD)");
-        }
-        if (!validateDFA()) {
-            throw new IllegalStateException("AFD inválido");
-        }
-
-        String currentState = initialState;
-        for (char c: input.toCharArray()){
-            String symbol = String.valueOf(c);
-            //Validar símbolo
-            if (!alphabet.contains(symbol)) {
-                return false;
-            }
-            List<Transition> possibleTransitions = getTransitions(currentState, symbol);
-
-           /*Si no existe transición para ese símbolo la cadena se rechaza*/ 
-            if(possibleTransitions.isEmpty()){
-                return false;
-            }
-            currentState = possibleTransitions.get(0).getToState();
-        }
-        return isFinalState(currentState);
-    }
-
-    public List<String> evaluateWithDetailedTrace(String input) {
-        if (input == null) {
-            throw new IllegalArgumentException("La cadena no puede ser null");
-        }
-        if (type != AutomatonType.AFD) {
-            throw new IllegalStateException("El automata no es determinista (AFD)");
-        }
-
-        if (!validateDFA()) {
-            throw new IllegalStateException("AFD inválido");
-        }
-
-        List<String> trace = new ArrayList<>();
-
-        String currentState = initialState;
-
-        for (char c : input.toCharArray()) {
-            String symbol = String.valueOf(c);
-
-            if (!alphabet.contains(symbol)) {
-                trace.add("(" + currentState + ", " + symbol + ") -> SIMBOLO INVÁLIDO");
-                return trace;
-            }
-
-            List<Transition> possibleTransitions = getTransitions(currentState, symbol);
-
-            if (possibleTransitions.isEmpty()) {
-                trace.add("(" + currentState + ", " + symbol + ") -> ERROR");
-                return trace;
-            }
-
-            String nextState = possibleTransitions.get(0).getToState();
-
-            trace.add("(" + currentState + ", " + symbol + ") -> " + nextState);
-
-            currentState = nextState;
-        }
-
-        return trace;
-    }
-
-    public boolean validateDFA() {
+    public boolean validateAFD() {
         //Estado inicial
         if (initialState == null || !states.contains(initialState)) {
             return false;
@@ -234,23 +169,130 @@ public class Automaton {
         return true;
     }
 
-    public Map<String, Boolean> evaluateBatch(List<String> inputs) {
-        if (inputs == null) {
-            throw new IllegalArgumentException("La lista de cadenas no puede ser null");
+    public boolean validateAFN() {
+        if (initialState == null || !states.contains(initialState)) return false;
+        for (String f : finalStates) if (!states.contains(f)) return false;
+        for (Transition t : transitions) {
+            if (!states.contains(t.getFromState()) || !states.contains(t.getToState()) ||
+                !alphabet.contains(t.getSymbol())) return false;
         }
-        if (inputs.size() > 10) {
-            throw new IllegalArgumentException("Se permiten máximo 10 cadenas");
+        return true;
+    }
+
+    public boolean evaluateAutomaton(String input) {
+        if (type == AutomatonType.AFD) {
+            if (!validateAFD()) throw new IllegalStateException("AFD inválido");
+            return evaluateAFD(input);
+        } else {
+            if (!validateAFN()) throw new IllegalStateException("AFN inválido");
+            return evaluateAFN(input);
         }
-        if (inputs.isEmpty()) {
-            throw new IllegalArgumentException("Debe ingresar al menos una cadena");
-        }
+    }
+
+    public Map<String, Boolean> evaluateBatchAutomaton(List<String> inputs) {
+        if (inputs == null || inputs.isEmpty()) throw new IllegalArgumentException("Debe ingresar al menos una cadena");
+        if (inputs.size() > 10) throw new IllegalArgumentException("Se permiten máximo 10 cadenas");
 
         Map<String, Boolean> results = new HashMap<>();
-        for (String input : inputs) {
-            boolean result = evaluate(input);
-            results.put(input, result);
-        }
+        for (String input : inputs) results.put(input, evaluateAutomaton(input));
         return results;
+    }
+
+    public boolean evaluateAFD(String input){
+        if (input == null) {
+            throw new IllegalArgumentException("La cadena no puede ser null");
+        }
+        if (type != AutomatonType.AFD) {
+            throw new IllegalStateException("El automata no es determinista (AFD)");
+        }
+        if (!validateAFD()) {
+            throw new IllegalStateException("AFD inválido");
+        }
+
+        String currentState = initialState;
+        for (char c: input.toCharArray()){
+            String symbol = String.valueOf(c);
+            //Validar símbolo
+            if (!alphabet.contains(symbol)) {
+                return false;
+            }
+            List<Transition> possibleTransitions = getTransitions(currentState, symbol);
+
+           /*Si no existe transición para ese símbolo la cadena se rechaza*/ 
+            if(possibleTransitions.isEmpty()){
+                return false;
+            }
+            currentState = possibleTransitions.get(0).getToState();
+        }
+        return isFinalState(currentState);
+    }
+
+    public List<String> evaluateAFDWithDetailedTrace(String input) {
+        if (input == null) {
+            throw new IllegalArgumentException("La cadena no puede ser null");
+        }
+        if (type != AutomatonType.AFD) {
+            throw new IllegalStateException("El automata no es determinista (AFD)");
+        }
+
+        if (!validateAFD()) {
+            throw new IllegalStateException("AFD inválido");
+        }
+
+        List<String> trace = new ArrayList<>();
+
+        String currentState = initialState;
+
+        for (char c : input.toCharArray()) {
+            String symbol = String.valueOf(c);
+
+            if (!alphabet.contains(symbol)) {
+                trace.add("(" + currentState + ", " + symbol + ") -> SIMBOLO INVÁLIDO");
+                return trace;
+            }
+
+            List<Transition> possibleTransitions = getTransitions(currentState, symbol);
+
+            if (possibleTransitions.isEmpty()) {
+                trace.add("(" + currentState + ", " + symbol + ") -> ERROR");
+                return trace;
+            }
+
+            String nextState = possibleTransitions.get(0).getToState();
+
+            trace.add("(" + currentState + ", " + symbol + ") -> " + nextState);
+
+            currentState = nextState;
+        }
+
+        return trace;
+    }
+
+    public boolean evaluateAFN(String input) {
+        if (type != AutomatonType.AFN)
+            throw new IllegalStateException("El automata no es AFN");
+        if (!validateAFN())
+            throw new IllegalStateException("AFN inválido");
+
+        Set<String> currentStates = new HashSet<>();
+        currentStates.add(initialState);
+
+        for (char c : input.toCharArray()) {
+            String symbol = String.valueOf(c);
+            if (!alphabet.contains(symbol)) return false;
+
+            Set<String> nextStates = new HashSet<>();
+            for (String state : currentStates) {
+                List<Transition> transitions = getTransitions(state, symbol);
+                for (Transition t : transitions) nextStates.add(t.getToState());
+            }
+
+            if (nextStates.isEmpty()) return false;
+            currentStates = nextStates;
+        }
+
+        for (String state : currentStates) if (isFinalState(state)) return true;
+        return false;
     }
 
     public void print() {
