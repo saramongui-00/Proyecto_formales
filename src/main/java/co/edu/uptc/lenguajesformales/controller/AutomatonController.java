@@ -39,7 +39,7 @@ public class AutomatonController {
     // AFD DE PRUEBA
     private void setupAutomaton() {
 
-        automaton.setType(AutomatonType.AFN);
+        automaton.setType(AutomatonType.NFA);
 
         // Estados
         automaton.addState("q0");
@@ -66,7 +66,7 @@ public class AutomatonController {
         automaton.addTransition(new Transition("q3", "a", "q3"));
         automaton.addTransition(new Transition("q3", "b", "q3"));
         
-        if (!automaton.validateAFN()) {
+        if (!automaton.validateNFA()) {
             throw new IllegalStateException("AFN inválido");
         }
     }
@@ -88,7 +88,7 @@ public class AutomatonController {
 
     private void showResult(String input) {
         try {
-            boolean result = automaton.evaluateAFN(input);
+            boolean result = automaton.evaluateNFA(input);
             view.showMessage(input + " -> " + result);
         } catch (IllegalStateException e) {
             view.showMessage("Error al evaluar '" + input + "': " + e.getMessage());

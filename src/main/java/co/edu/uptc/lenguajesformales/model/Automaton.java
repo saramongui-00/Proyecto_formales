@@ -86,7 +86,7 @@ public class Automaton {
     }
     
     public void addTransition(Transition transition){
-        if (type == AutomatonType.AFD) {
+        if (type == AutomatonType.DFA) {
             for (Transition t : transitions) {
                 if (t.getFromState().equals(transition.getFromState()) &&
                     t.getSymbol().equals(transition.getSymbol())) {
@@ -131,7 +131,7 @@ public class Automaton {
         return finalStates.contains(state);
     }
 
-    public boolean validateAFD() {
+    public boolean validateDFA() {
         //Estado inicial
         if (initialState == null || !states.contains(initialState)) {
             return false;
@@ -169,7 +169,7 @@ public class Automaton {
         return true;
     }
 
-    public boolean validateAFN() {
+    public boolean validateNFA() {
         if (initialState == null || !states.contains(initialState)) return false;
         for (String f : finalStates) if (!states.contains(f)) return false;
         for (Transition t : transitions) {
@@ -180,12 +180,12 @@ public class Automaton {
     }
 
     public boolean evaluateAutomaton(String input) {
-        if (type == AutomatonType.AFD) {
-            if (!validateAFD()) throw new IllegalStateException("AFD inválido");
+        if (type == AutomatonType.DFA) {
+            if (!validateDFA()) throw new IllegalStateException("DFA inválido");
             return evaluateAFD(input);
         } else {
-            if (!validateAFN()) throw new IllegalStateException("AFN inválido");
-            return evaluateAFN(input);
+            if (!validateNFA()) throw new IllegalStateException("NFA inválido");
+            return evaluateNFA(input);
         }
     }
 
@@ -202,10 +202,10 @@ public class Automaton {
         if (input == null) {
             throw new IllegalArgumentException("La cadena no puede ser null");
         }
-        if (type != AutomatonType.AFD) {
+        if (type != AutomatonType.DFA) {
             throw new IllegalStateException("El automata no es determinista (AFD)");
         }
-        if (!validateAFD()) {
+        if (!validateDFA()) {
             throw new IllegalStateException("AFD inválido");
         }
 
@@ -231,11 +231,11 @@ public class Automaton {
         if (input == null) {
             throw new IllegalArgumentException("La cadena no puede ser null");
         }
-        if (type != AutomatonType.AFD) {
+        if (type != AutomatonType.DFA) {
             throw new IllegalStateException("El automata no es determinista (AFD)");
         }
 
-        if (!validateAFD()) {
+        if (!validateDFA()) {
             throw new IllegalStateException("AFD inválido");
         }
 
@@ -268,11 +268,11 @@ public class Automaton {
         return trace;
     }
 
-    public boolean evaluateAFN(String input) {
-        if (type != AutomatonType.AFN)
-            throw new IllegalStateException("El automata no es AFN");
-        if (!validateAFN())
-            throw new IllegalStateException("AFN inválido");
+    public boolean evaluateNFA(String input) {
+        if (type != AutomatonType.NFA)
+            throw new IllegalStateException("El automata no es NFA");
+        if (!validateNFA())
+            throw new IllegalStateException("DFA inválido");
 
         Set<String> currentStates = new HashSet<>();
         currentStates.add(initialState);
