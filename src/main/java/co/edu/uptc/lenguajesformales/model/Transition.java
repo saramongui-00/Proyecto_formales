@@ -5,6 +5,9 @@ public class Transition {
     private String fromState;
     private String symbol;
     private String toState;
+
+    public Transition() {
+    }
     
     public Transition(String fromState, String symbol, String toState) {
         this.fromState = fromState;
@@ -16,12 +19,24 @@ public class Transition {
         return fromState;
     }
 
+    public void setFromState(String fromState) {
+        this.fromState = fromState;
+    }
+
     public String getSymbol() {
         return symbol;
     }
 
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
+
     public String getToState() {
         return toState;
+    }
+
+    public void setToState(String toState) {
+        this.toState = toState;
     }
 
     @Override
