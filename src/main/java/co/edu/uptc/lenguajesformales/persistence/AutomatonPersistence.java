@@ -21,10 +21,10 @@ public class AutomatonPersistence {
 
 	public void exportToJson(Automaton automaton, String filePath) throws IOException {
 		if (automaton == null) {
-			throw new IllegalArgumentException("Automaton cannot be null");
+			throw new IllegalArgumentException("El automata no puede ser nulo.");
 		}
 		if (filePath == null || filePath.isBlank()) {
-			throw new IllegalArgumentException("File path cannot be empty");
+			throw new IllegalArgumentException("La ruta del archivo no puede estar vacia");
 		}
 
 		Path path = Path.of(filePath);
@@ -45,7 +45,7 @@ public class AutomatonPersistence {
 
 		Path path = Path.of(filePath);
 		if (!Files.exists(path)) {
-			throw new IOException("File does not exist: " + filePath);
+			throw new IOException("El archivo no existe: " + filePath);
 		}
 
 		try (Reader reader = Files.newBufferedReader(path)) {
@@ -56,9 +56,8 @@ public class AutomatonPersistence {
 
 	private Automaton normalize(Automaton automaton) {
 		if (automaton == null) {
-			throw new IllegalArgumentException("Invalid JSON: automaton is null");
+			throw new IllegalArgumentException("El archivo JSON no contiene un automata valido.");
 		}
-
 		if (automaton.getStates() == null) {
 			automaton.setStates(new ArrayList<>());
 		}
@@ -71,7 +70,6 @@ public class AutomatonPersistence {
 		if (automaton.getFinalStates() == null) {
 			automaton.setFinalStates(new ArrayList<>());
 		}
-
 		return automaton;
 	}
 }
