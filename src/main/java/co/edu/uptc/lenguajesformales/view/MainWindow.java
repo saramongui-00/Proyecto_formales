@@ -1,9 +1,12 @@
 package co.edu.uptc.lenguajesformales.view;
 
+import co.edu.uptc.lenguajesformales.dto.TransitionDTO;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class MainWindow extends JFrame implements ActionListener {
     private SideMenu sideMenu;
@@ -61,6 +64,11 @@ public class MainWindow extends JFrame implements ActionListener {
     }
 
     public void generateAutomaton(){
+        ArrayList<TransitionDTO>t = createAutomatonPanel.getTransitions();
+        t.forEach(q -> System.out.println( "simbolo: " + q.getSymbol() + " "+q.getFromState() + " -> " + q.getToState() + " "));
+
+
+
         showAutomatonPanel.setAutomaton(createAutomatonPanel.createAutomaton());
         repaint();
         showAutomatonPanel.repaint();

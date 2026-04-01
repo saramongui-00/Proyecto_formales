@@ -16,18 +16,12 @@ public class FinalStateRenderer implements Function<String, Paint> {
 
     @Override
     public Paint apply(String state) {
-
-        // Estado inicial → verde
         if (state.equals(automaton.getInitialState())) {
             return Color.GREEN;
         }
-
-        // Estados finales → rojo
         if (automaton.getFinalStates().contains(state)) {
             return Color.RED;
         }
-
-        // Estados normales → blanco
         return Color.WHITE;
     }
 }
