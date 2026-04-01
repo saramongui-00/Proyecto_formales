@@ -2,20 +2,24 @@ package co.edu.uptc.lenguajesformales.view;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.IdentityHashMap;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class MainWindow extends JFrame{
+public class MainWindow extends JFrame implements ActionListener {
     private SideMenu sideMenu;
     private JPanel centralPanel;
+
     private CreateAutomatonPanel createAutomatonPanel;
+    private EvaluateAutomatonPanel evaluateAutomatonPanel;
+
     private JPanel showAutomatonPanel;
 
     public MainWindow(){
-        sideMenu = new SideMenu();
+        sideMenu = new SideMenu(this);
         centralPanel = new JPanel();
         showAutomatonPanel = new JPanel();
         createAutomatonPanel = new CreateAutomatonPanel();
-
+        evaluateAutomatonPanel = new EvaluateAutomatonPanel();
         conf();
     }
 
@@ -40,5 +44,24 @@ public class MainWindow extends JFrame{
     }
 
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        switch (e.getActionCommand()){
+            case "createAutomatonBtn":centralPanel.removeAll();
+                centralPanel.add(createAutomatonPanel);
+                centralPanel.add(showAutomatonPanel);
+                repaint();
+                break;
+            case "evaluateAutomatonBtn": centralPanel.removeAll();
+                centralPanel.add(evaluateAutomatonPanel);
+                centralPanel.add(showAutomatonPanel);
+                centralPanel.repaint();
+                break;
+            case "saveAutomatonBtn":
+                String[]options = {"Exportar", "Importar"};
+                JOptionPane.showOptionDialog(this, "Guardar automata", "Importar/Exportar automata", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+                break;
+        }
 
+    }
 }
