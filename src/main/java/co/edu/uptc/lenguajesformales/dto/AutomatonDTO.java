@@ -1,31 +1,36 @@
 package co.edu.uptc.lenguajesformales.dto;
-
-import co.edu.uptc.lenguajesformales.model.AutomatonType;
-import co.edu.uptc.lenguajesformales.model.Transition;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class Automaton {
-    private AutomatonType type;
+public class AutomatonDTO {
+    private String type;
     private List<String> states;
     private List<String> alphabet;
-    private List<co.edu.uptc.lenguajesformales.model.Transition> transitions;
+    private List<TransitionDTO> transitions;
     private String initialState;
     private List<String> finalStates;
 
-    public Automaton() {
+    public AutomatonDTO() {
         states =new ArrayList<>();
         alphabet = new ArrayList<>();
         transitions = new ArrayList<>();
         finalStates = new ArrayList<>();
     }
 
-    public AutomatonType getType() {
+    public AutomatonDTO(String type, List<String> states, List<String> alphabet, List<TransitionDTO> transitions, String initialState, List<String> finalStates) {
+        this.type = type;
+        this.states = states;
+        this.alphabet = alphabet;
+        this.transitions = transitions;
+        this.initialState = initialState;
+        this.finalStates = finalStates;
+    }
+
+    public String getType() {
         return type;
     }
 
-    public void setType(AutomatonType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -45,11 +50,11 @@ public class Automaton {
         this.alphabet = alphabet;
     }
 
-    public List<Transition> getTransitions() {
+    public List<TransitionDTO> getTransitions() {
         return transitions;
     }
 
-    public void setTransitions(List<Transition> transitions) {
+    public void setTransitions(List<TransitionDTO> transitions) {
         this.transitions = transitions;
     }
 

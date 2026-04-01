@@ -12,13 +12,13 @@ public class MainWindow extends JFrame implements ActionListener {
     private CreateAutomatonPanel createAutomatonPanel;
     private EvaluateAutomatonPanel evaluateAutomatonPanel;
 
-    private JPanel showAutomatonPanel;
+    private ShowAutomatonPanel showAutomatonPanel;
 
     public MainWindow(){
         sideMenu = new SideMenu(this);
         centralPanel = new JPanel();
-        showAutomatonPanel = new JPanel();
-        createAutomatonPanel = new CreateAutomatonPanel();
+        showAutomatonPanel = new ShowAutomatonPanel();
+        createAutomatonPanel = new CreateAutomatonPanel(this);
         evaluateAutomatonPanel = new EvaluateAutomatonPanel();
         conf();
     }
@@ -30,10 +30,6 @@ public class MainWindow extends JFrame implements ActionListener {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         add(sideMenu, BorderLayout.WEST);
-
-
-        showAutomatonPanel.setBackground(Color.green);
-
         centralPanel.add(createAutomatonPanel);
         centralPanel.add(showAutomatonPanel);
 
@@ -43,23 +39,44 @@ public class MainWindow extends JFrame implements ActionListener {
         setVisible(true);
     }
 
+    public void changeCreateAutomatonPanel(){
+        centralPanel.removeAll();
+        centralPanel.add(createAutomatonPanel);
+        centralPanel.add(showAutomatonPanel);
+        repaint();
+    }
+
+    public void changeEvaluateAutomatonPanel(){
+        centralPanel.removeAll();
+        centralPanel.add(evaluateAutomatonPanel);
+        centralPanel.add(showAutomatonPanel);
+        centralPanel.repaint();
+        revalidate();
+        repaint();
+    }
+
+    public void saveAutomatonAlert(){
+        String[]options = {"Exportar", "Importar"};
+        JOptionPane.showOptionDialog(this, "Guardar automata", "Importar/Exportar automata", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+    }
+
+    public void generateAutomaton(){
+        showAutomatonPanel.setAutomaton(createAutomatonPanel.createAutomaton());
+        repaint();
+        showAutomatonPanel.repaint();
+    }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()){
-            case "createAutomatonBtn":centralPanel.removeAll();
-                centralPanel.add(createAutomatonPanel);
-                centralPanel.add(showAutomatonPanel);
-                repaint();
+            case "createAutomatonBtn": changeCreateAutomatonPanel();
                 break;
-            case "evaluateAutomatonBtn": centralPanel.removeAll();
-                centralPanel.add(evaluateAutomatonPanel);
-                centralPanel.add(showAutomatonPanel);
-                centralPanel.repaint();
+            case "evaluateAutomatonBtn": changeEvaluateAutomatonPanel();
                 break;
-            case "saveAutomatonBtn":
-                String[]options = {"Exportar", "Importar"};
-                JOptionPane.showOptionDialog(this, "Guardar automata", "Importar/Exportar automata", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+            case "saveAutomatonBtn":saveAutomatonAlert();
+                break;
+            case "generateAutomatonBtn": generateAutomaton();
                 break;
         }
 

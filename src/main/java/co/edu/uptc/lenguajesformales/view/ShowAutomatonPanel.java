@@ -1,86 +1,75 @@
 package co.edu.uptc.lenguajesformales.view;
 
-import co.edu.uptc.lenguajesformales.dto.Automaton;
-import co.edu.uptc.lenguajesformales.dto.Transition;
+
+
+import co.edu.uptc.lenguajesformales.dto.AutomatonDTO;
+import co.edu.uptc.lenguajesformales.dto.TransitionDTO;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
+import edu.uci.ics.jung.algorithms.layout.FRLayout;
+import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
-
+import edu.uci.ics.jung.visualization.renderers.Renderer;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ShowAutomatonPanel extends JPanel {
 
-    private VisualizationViewer<String, String> viewer;
-    private DirectedSparseMultigraph<String, String> graph;
+    private VisualizationViewer<String,String> viewer;
 
     public ShowAutomatonPanel() {
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createTitledBorder("Autómata generado"));
+        setBorder(BorderFactory.createTitledBorder("Autómata"));
     }
 
-    // Método principal que la vista usará
-    public void setAutomaton(Automaton automaton) {
+    public void setAutomaton(AutomatonDTO automaton) {
 
-        removeAll();
-        graph = new DirectedSparseMultigraph<>();
+        // Grafo dirigido
+        DirectedSparseMultigraph<String, String> graph = new DirectedSparseMultigraph<>();
 
-        // 1️⃣ agregar estados (vértices)
+        // Agregar estados
         for (String state : automaton.getStates()) {
             graph.addVertex(state);
         }
 
-        // 2️⃣ agrupar transiciones (para unir etiquetas repetidas)
-        Map<String, StringBuilder> edgesMap = new HashMap<>();
-
-        for (Transition t : automaton.getTransitions()) {
-            String key = t.getFromState() + "->" + t.getToState();
-
-            edgesMap.putIfAbsent(key, new StringBuilder());
-            edgesMap.get(key).append(t.getSymbol()).append(",");
-        }
-
-        // 3️⃣ agregar aristas al grafo
+        // Agregar transiciones (edgeId único)
         int edgeId = 0;
-        for (String key : edgesMap.keySet()) {
-
-            String[] parts = key.split("->");
-            String from = parts[0];
-            String to = parts[1];
-
-            String label = edgesMap.get(key).toString();
-            label = label.substring(0, label.length() - 1); // quitar última coma
-
-            graph.addEdge(label + "_" + edgeId++, from, to);
+        for (co.edu.uptc.lenguajesformales.dto.TransitionDTO t : automaton.getTransitions()) {
+            String edgeLabel = t.getSymbol();
+            graph.addEdge(edgeLabel + "_" + edgeId++, t.getFromState(), t.getToState());
         }
 
-        // 4️⃣ layout circular automático
-        CircleLayout<String, String> layout = new CircleLayout<>(graph);
+        // Layout circular (se ve mejor que FR para pocos nodos)
+        Layout<String, String> layout = new CircleLayout<>(graph);
         layout.setSize(new Dimension(500, 400));
 
-        viewer = new VisualizationViewer<>(layout);
-        viewer.setPreferredSize(new Dimension(600, 450));
+        VisualizationViewer<String, String> vv = new VisualizationViewer<>(layout);
+        vv.setPreferredSize(new Dimension(600, 450));
 
-        // etiquetas de estados
-        viewer.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<>());
-        viewer.getRenderContext().setEdgeLabelTransformer(edge -> edge.split("_")[0]);
+        // Etiquetas de nodos
+        vv.getRenderContext().setVertexLabelTransformer(v -> v);
+        vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
 
-        // 5️⃣ pintar estados especiales
-        viewer.getRenderContext().setVertexFillPaintTransformer(state -> {
-            if (state.equals(automaton.getInitialState()))
-                return Color.GREEN;
-            if (automaton.getFinalStates().contains(state))
-                return Color.ORANGE;
-            return Color.LIGHT_GRAY;
-        });
+        // Etiquetas de aristas (símbolos)
+        vv.getRenderContext().setEdgeLabelTransformer(e -> e.split("_")[0]);
 
-        // 6️⃣ dibujar borde doble para finales
-        viewer.getRenderer().setVertexRenderer(new FinalStateRenderer(automaton));
+        // Renderer de colores (tu FinalStateRenderer)
+        vv.getRenderContext().setVertexFillPaintTransformer(
+                new FinalStateRenderer(automaton)
+        );
 
-        add(viewer, BorderLayout.CENTER);
+        // Tamaño de nodos
+        vv.getRenderContext().setVertexShapeTransformer(v ->
+                new Ellipse2D.Double(-20, -20, 40, 40)
+        );
+
+        removeAll();
+        setLayout(new BorderLayout());
+        add(vv, BorderLayout.CENTER);
         revalidate();
         repaint();
     }

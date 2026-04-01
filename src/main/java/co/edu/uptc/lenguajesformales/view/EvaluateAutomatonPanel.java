@@ -32,7 +32,7 @@ public class EvaluateAutomatonPanel extends JPanel {
 
         evaluateBtn = new JButton("Evaluar entradas");
         traceBtn = new JButton("Mirar trazabilidad");
-        epsilonBtn = new JButton("Epsilon");
+        epsilonBtn = new JButton("Agregar Epsilon");
 
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonsPanel.add(evaluateBtn);
@@ -46,25 +46,20 @@ public class EvaluateAutomatonPanel extends JPanel {
 
         String[] columns = {"Entrada", "Resultado"};
 
-        model = new DefaultTableModel(columns, 11) {
+        model = new DefaultTableModel(columns, 10) {
 
             @Override
             public boolean isCellEditable(int row, int column) {
-                // Solo la columna Entrada es editable (excepto encabezado)
-                return column == 0 && row > 0;
+                return column == 0;
             }
         };
 
         table.setModel(model);
         table.setRowHeight(25);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        // Primera fila como ejemplo/placeholder
         model.setValueAt("", 0, 0);
         model.setValueAt("", 0, 1);
     }
-
-    // getters para que luego conectes lógica
 
     public JTable getTable() { return table; }
     public DefaultTableModel getModel() { return model; }

@@ -24,7 +24,6 @@ public class SideMenu extends JPanel {
         setButtonsActionCommand();
         setPreferredSize(new Dimension(80,200));
         setLayout(new FlowLayout(FlowLayout.LEFT));
-        setBackground(Color.black);
         add(createAutomatonBtn);
         add(evaluateAutomatonBtn);
         add(saveAutomatonBtn);

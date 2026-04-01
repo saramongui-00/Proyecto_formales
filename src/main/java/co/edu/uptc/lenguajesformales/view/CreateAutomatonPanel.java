@@ -1,11 +1,13 @@
 package co.edu.uptc.lenguajesformales.view;
 
-import co.edu.uptc.lenguajesformales.dto.Transition;
+import co.edu.uptc.lenguajesformales.dto.AutomatonDTO;
+import co.edu.uptc.lenguajesformales.dto.TransitionDTO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -22,10 +24,10 @@ public class CreateAutomatonPanel extends JPanel {
     private JButton removeSymbolBtn;
     private JButton generateAutomatonBtn;
 
-    public CreateAutomatonPanel() {
+    public CreateAutomatonPanel(ActionListener listener) {
         initComponents();
         configureTable();
-        configureEvents();
+        configureEvents(listener);
     }
 
     private void initComponents() {
@@ -83,7 +85,9 @@ public class CreateAutomatonPanel extends JPanel {
         });
     }
 
-    private void configureEvents() {
+    private void configureEvents(ActionListener listener) {
+        generateAutomatonBtn.setActionCommand("generateAutomatonBtn");
+        generateAutomatonBtn.addActionListener(listener);
         addStateBtn.addActionListener(e -> addState());
         removeStateBtn.addActionListener(e -> removeState());
         addSymbolBtn.addActionListener(e -> addSymbol());
@@ -168,7 +172,7 @@ public class CreateAutomatonPanel extends JPanel {
     }
 
     public void generateAutomaton(){
-        ArrayList<Transition>transitions = getTransitions();
+        ArrayList<TransitionDTO>transitions = getTransitions();
         transitions.forEach(t -> System.out.println("from: "+t.getFromState() +
                                                                 "to:" + t.getToState() +
                                                                 "symbol:" + t.getSymbol()));
@@ -188,6 +192,12 @@ public class CreateAutomatonPanel extends JPanel {
 
     public void showError(String message){
         JOptionPane.showMessageDialog(this,message,"Error",JOptionPane.ERROR_MESSAGE);
+    }
+
+    //GETTERS
+
+    public String getAutomatonType(){
+        return tAutonatonCB.getSelectedItem().toString();
     }
 
     public ArrayList<String> getStates() {
@@ -229,8 +239,8 @@ public class CreateAutomatonPanel extends JPanel {
         return alphabet;
     }
 
-    public ArrayList<Transition> getTransitions() {
-        ArrayList<Transition> transitions = new ArrayList<>();
+    public ArrayList<TransitionDTO> getTransitions() {
+        ArrayList<TransitionDTO> transitions = new ArrayList<>();
         for(int row=0;row<model.getRowCount();row++){
             String from = model.getValueAt(row,2).toString();
             for(int col=3;col<model.getColumnCount();col++){
@@ -238,10 +248,14 @@ public class CreateAutomatonPanel extends JPanel {
                 if(cell==null) continue;
                 String[] dests = cell.toString().split(",");
                 for(String d : dests)
-                    transitions.add(new Transition(from,model.getColumnName(col),d.trim()));
+                    transitions.add(new TransitionDTO(from,model.getColumnName(col),d.trim()));
             }
         }
         return transitions;
+    }
+
+    public AutomatonDTO createAutomaton(){
+        return new AutomatonDTO(getAutomatonType(), getStates(), getAlphabet(), getTransitions(), getInitialState(), getFinalStates());
     }
 
 

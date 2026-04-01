@@ -1,40 +1,33 @@
 package co.edu.uptc.lenguajesformales.view;
 
-import co.edu.uptc.lenguajesformales.dto.Automaton;
-import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.visualization.RenderContext;
-import edu.uci.ics.jung.visualization.renderers.Renderer;
-import edu.uci.ics.jung.visualization.transform.shape.GraphicsDecorator;
+import co.edu.uptc.lenguajesformales.dto.AutomatonDTO;
+import com.google.common.base.Function;
 
-import java.awt.*;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
+import java.awt.Color;
+import java.awt.Paint;
 
-public class FinalStateRenderer implements Renderer.Vertex<String, String> {
+public class FinalStateRenderer implements Function<String, Paint> {
 
-    private Automaton automaton;
+    private AutomatonDTO automaton;
 
-    public FinalStateRenderer(Automaton automaton) {
+    public FinalStateRenderer(AutomatonDTO automaton) {
         this.automaton = automaton;
     }
 
     @Override
-    public void paintVertex(RenderContext<String, String> rc,
-                            Layout<String, String> layout,
-                            String vertex) {
+    public Paint apply(String state) {
 
-        GraphicsDecorator g = rc.getGraphicsContext();
-
-        Point2D p = layout.apply(vertex);
-
-        int size = 30;
-
-        Shape circle = new Ellipse2D.Double(p.getX() - size/2, p.getY() - size/2, size, size);
-        g.draw(circle);
-
-        if (automaton.getFinalStates().contains(vertex)) {
-            Shape inner = new Ellipse2D.Double(p.getX() - size/2 + 4, p.getY() - size/2 + 4, size-8, size-8);
-            g.draw(inner);
+        // Estado inicial → verde
+        if (state.equals(automaton.getInitialState())) {
+            return Color.GREEN;
         }
+
+        // Estados finales → rojo
+        if (automaton.getFinalStates().contains(state)) {
+            return Color.RED;
+        }
+
+        // Estados normales → blanco
+        return Color.WHITE;
     }
 }
