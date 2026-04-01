@@ -58,20 +58,27 @@ public class MainWindow extends JFrame implements ActionListener {
         repaint();
     }
 
+    public void showError(String message){
+        JOptionPane.showMessageDialog(this,message,"Error",JOptionPane.ERROR_MESSAGE);
+    }
+
     public void saveAutomatonAlert(){
-        String[]options = {"Exportar", "Importar"};
-        JOptionPane.showOptionDialog(this, "Guardar automata", "Importar/Exportar automata", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+        String[]options = {"Exportar", "Importar", "Cancelar"};
+        JOptionPane.showOptionDialog(this, "¿Que acción desea realizar?", "Guardar cambios", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
     }
 
     public void generateAutomaton(){
-        ArrayList<TransitionDTO>t = createAutomatonPanel.getTransitions();
-        t.forEach(q -> System.out.println( "simbolo: " + q.getSymbol() + " "+q.getFromState() + " -> " + q.getToState() + " "));
-
-
-
-        showAutomatonPanel.setAutomaton(createAutomatonPanel.createAutomaton());
-        repaint();
-        showAutomatonPanel.repaint();
+        if (createAutomatonPanel.getStates().isEmpty()) {
+            showError("Debe existir al menos un estado");
+        } else if (createAutomatonPanel.getAlphabet().isEmpty()) {
+            showError("Debe existir al menos un símbolo en el alfabeto.");
+        } else if (createAutomatonPanel.getTransitions().isEmpty()) {
+            showError("Debe existir al menos una transicion");
+        } else if(createAutomatonPanel.getFinalStates().isEmpty()) {
+            showError("Debe existir al menos un estado final");
+        } else{
+            showAutomatonPanel.setAutomaton(createAutomatonPanel.createAutomaton());
+        }
     }
 
 
