@@ -1,25 +1,99 @@
 package co.edu.uptc.lenguajesformales.view;
 
-import java.util.Scanner;
+import co.edu.uptc.lenguajesformales.dto.TransitionDTO;
 
-public class MainWindow {
-    
-    private Scanner scanner;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-    public MainWindow() {
-        scanner = new Scanner(System.in);
+public class MainWindow extends JFrame implements ActionListener {
+    private SideMenu sideMenu;
+    private JPanel centralPanel;
+
+    private CreateAutomatonPanel createAutomatonPanel;
+    private EvaluateAutomatonPanel evaluateAutomatonPanel;
+
+    private ShowAutomatonPanel showAutomatonPanel;
+
+    public MainWindow(){
+        sideMenu = new SideMenu(this);
+        centralPanel = new JPanel();
+        showAutomatonPanel = new ShowAutomatonPanel();
+        createAutomatonPanel = new CreateAutomatonPanel(this);
+        evaluateAutomatonPanel = new EvaluateAutomatonPanel();
+        conf();
     }
 
-    public String requestString() {
-        System.out.print("Enter a string: ");
-        return scanner.nextLine();
+    public void conf(){
+        centralPanel.setLayout(new BoxLayout(centralPanel,BoxLayout.X_AXIS));
+
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+        add(sideMenu, BorderLayout.WEST);
+        centralPanel.add(createAutomatonPanel);
+        centralPanel.add(showAutomatonPanel);
+
+        add(centralPanel);
+
+
+        setVisible(true);
     }
 
-    public void showResult(boolean result) {
-        System.out.println("Result: " + result);
+    public void changeCreateAutomatonPanel(){
+        centralPanel.removeAll();
+        centralPanel.add(createAutomatonPanel);
+        centralPanel.add(showAutomatonPanel);
+        repaint();
     }
 
-    public void showMessage(String message) {
-        System.out.println(message);
+    public void changeEvaluateAutomatonPanel(){
+        centralPanel.removeAll();
+        centralPanel.add(evaluateAutomatonPanel);
+        centralPanel.add(showAutomatonPanel);
+        centralPanel.repaint();
+        revalidate();
+        repaint();
+    }
+
+    public void showError(String message){
+        JOptionPane.showMessageDialog(this,message,"Error",JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void saveAutomatonAlert(){
+        String[]options = {"Exportar", "Importar", "Cancelar"};
+        JOptionPane.showOptionDialog(this, "¿Que acción desea realizar?", "Guardar cambios", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+    }
+
+    public void generateAutomaton(){
+        if (createAutomatonPanel.getStates().isEmpty()) {
+            showError("Debe existir al menos un estado");
+        } else if (createAutomatonPanel.getAlphabet().isEmpty()) {
+            showError("Debe existir al menos un símbolo en el alfabeto.");
+        } else if (createAutomatonPanel.getTransitions().isEmpty()) {
+            showError("Debe existir al menos una transicion");
+        } else if(createAutomatonPanel.getFinalStates().isEmpty()) {
+            showError("Debe existir al menos un estado final");
+        } else{
+            showAutomatonPanel.setAutomaton(createAutomatonPanel.createAutomaton());
+        }
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        switch (e.getActionCommand()){
+            case "createAutomatonBtn": changeCreateAutomatonPanel();
+                break;
+            case "evaluateAutomatonBtn": changeEvaluateAutomatonPanel();
+                break;
+            case "saveAutomatonBtn":saveAutomatonAlert();
+                break;
+            case "generateAutomatonBtn": generateAutomaton();
+                break;
+        }
+
     }
 }
