@@ -25,6 +25,24 @@ public class Automaton {
         finalStates = new ArrayList<>();
     }
 
+    public Automaton(String type, List<String> states, List<String> alphabet,
+                     List<Transition> transitions, String initialState, List<String> finalStates) {
+        setAutomatonType(type);
+        this.states = states;
+        this.alphabet = alphabet;
+        this.transitions = transitions;
+        this.initialState = initialState;
+        this.finalStates = finalStates;
+    }
+
+    public void setAutomatonType(String type){
+        if(type.equals("DFA")){
+            setType(AutomatonType.DFA);
+        }if(type.equals("NFA")){
+            setType(AutomatonType.NFA);
+        }
+    }
+
     public AutomatonType getType() {
         return type;
     }

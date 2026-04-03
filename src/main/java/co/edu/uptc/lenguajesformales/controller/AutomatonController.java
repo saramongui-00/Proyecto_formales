@@ -1,124 +1,66 @@
 package co.edu.uptc.lenguajesformales.controller;
 
-import java.util.List;
-import java.util.Map;
 
+import co.edu.uptc.lenguajesformales.dto.AutomatonDTO;
+import co.edu.uptc.lenguajesformales.dto.TransitionDTO;
 import co.edu.uptc.lenguajesformales.model.Automaton;
-import co.edu.uptc.lenguajesformales.model.AutomatonType;
 import co.edu.uptc.lenguajesformales.model.Transition;
 import co.edu.uptc.lenguajesformales.view.MainWindow;
 
-public class AutomatonController {
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
+public class AutomatonController implements ActionListener {
     private Automaton automaton;
     private MainWindow view;
-    
-    public AutomatonController(Automaton automaton, MainWindow view) {
-        this.automaton = automaton;
-        this.view = view;
+
+    public AutomatonController(){
+        automaton = new Automaton();
+        view = new MainWindow(this);
     }
 
-    public void start() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        switch (e.getActionCommand()){
+            case "createAutomatonBtn": view.changeCreateAutomatonPanel();
+                break;
+            case "evaluateAutomatonBtn": view.changeEvaluateAutomatonPanel();
+                break;
+            case "saveAutomatonBtn":view.saveAutomatonAlert();
+                break;
+            case "generateAutomatonBtn": generateAutomaton();
+                break;
+            case "evaluateBtn": evaluateInputs();
+                break;
+            case "traceBtn":
+                break;
+            case "epsilonBtn":
+                break;
 
-        view.showMessage("AUTOMATON SYSTEM");
-
-        try{
-        setupAutomaton();
-        }catch (IllegalStateException e){
-            view.showMessage("Error: "+e.getMessage());
-            return;
-        }
-
-        automaton.print();
-
-        testEvaluate();
-        testTrace();
-        testBatch();
-    }
-
-    // AFD DE PRUEBA
-    private void setupAutomaton() {
-
-        automaton.setType(AutomatonType.NFA);
-
-        // Estados
-        automaton.addState("q0");
-        automaton.addState("q1");
-        automaton.addState("q2");
-        automaton.addState("q3");
-
-        // Alfabeto
-        automaton.addSymbol("a");
-        automaton.addSymbol("b");
-
-        // Inicial
-        automaton.setInitialState("q0");
-
-        // Final
-        automaton.addFinalState("q3");
-
-        // Transiciones
-        automaton.addTransition(new Transition("q0", "a", "q0"));
-        automaton.addTransition(new Transition("q0", "b", "q0"));
-        automaton.addTransition(new Transition("q0", "a", "q1"));
-        automaton.addTransition(new Transition("q1", "b", "q2"));
-        automaton.addTransition(new Transition("q2", "a", "q3"));
-        automaton.addTransition(new Transition("q3", "a", "q3"));
-        automaton.addTransition(new Transition("q3", "b", "q3"));
-        
-        if (!automaton.validateNFA()) {
-            throw new IllegalStateException("AFN inválido");
         }
     }
 
-    // PRUEBAS
-
-    private void testEvaluate() {
-        view.showMessage("\nEVALUATE");
-
-        showResult("aba");
-        showResult("ab");
-        showResult("");
-        showResult("aaaaaaababaaa");
-        showResult("bababbababa");
-        showResult("bbbbaaaa");
-        showResult("bbb");
-        showResult("aaaaaaab");
+    public void evaluateInputs(){
+        ArrayList<String>inputs = view.getInputs();
+        inputs.forEach(i -> System.out.println(i));
     }
 
-    private void showResult(String input) {
-        try {
-            boolean result = automaton.evaluateNFA(input);
-            view.showMessage(input + " -> " + result);
-        } catch (IllegalStateException e) {
-            view.showMessage("Error al evaluar '" + input + "': " + e.getMessage());
+    public void generateAutomaton(){
+        if(view.generateAutomaton()){
+            AutomatonDTO tempAut = view.getAutomaton();
+            automaton = new Automaton(tempAut.getType(), tempAut.getStates(), tempAut.getAlphabet(),
+                    transitionMapper(tempAut.getTransitions()), tempAut.getInitialState(), tempAut.getFinalStates());
         }
     }
 
-    private void testTrace() {
-        view.showMessage("\nTRACE");
-        try {
-            List<String> trace = automaton.evaluateAFDWithDetailedTrace("aba");
-            for (String step : trace) {
-                view.showMessage(step);
-            }
-        } catch (IllegalStateException e) {
-            view.showMessage("Error en TRACE: " + e.getMessage());
-        }
+    public List<Transition> transitionMapper(List<TransitionDTO> dtoList){
+        return dtoList.stream()
+                .map(dto -> new Transition(
+                        dto.getFromState(),
+                        dto.getSymbol(),
+                        dto.getToState()))
+                .toList();
     }
-
-    private void testBatch() {
-        view.showMessage("\nBATCH");
-        List<String> inputs = List.of("aba", "ab", "", "aaaaaaababaaa", "bababbababa", "bbbbaaaa", "bbb");
-        try {
-            Map<String, Boolean> results = automaton.evaluateBatchAutomaton(inputs);
-            for (Map.Entry<String, Boolean> entry : results.entrySet()) {
-                view.showMessage(entry.getKey() + " -> " + entry.getValue());
-            }
-        } catch (IllegalStateException e) {
-            view.showMessage("Error en BATCH: " + e.getMessage());
-        }
-    }
-
-    
 }

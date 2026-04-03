@@ -40,7 +40,7 @@ public class CreateAutomatonPanel extends JPanel {
 
     private void initComponents() {
         top = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        tAutonatonCB = new JComboBox<>(new String[]{"AFN","AFD"});
+        tAutonatonCB = new JComboBox<>(new String[]{"DFA","NFA"});
         table = new JTable();
         addStateBtn = new OptionButton("Crear Estado");
         removeStateBtn = new OptionButton("Eliminar estado");

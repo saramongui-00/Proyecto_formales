@@ -3,6 +3,8 @@ package co.edu.uptc.lenguajesformales.view;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class EvaluateAutomatonPanel extends JPanel {
 
@@ -10,35 +12,38 @@ public class EvaluateAutomatonPanel extends JPanel {
     private DefaultTableModel model;
     private JScrollPane scroll;
 
-    private JButton evaluateBtn;
-    private JButton traceBtn;
-    private JButton epsilonBtn;
+    private OptionButton evaluateBtn;
+    private OptionButton traceBtn;
+    private OptionButton epsilonBtn;
 
     private JPanel buttonsPanel;
 
-    public EvaluateAutomatonPanel() {
+    public EvaluateAutomatonPanel(ActionListener listener) {
         initComponents();
+        conf();
         configureTable();
+        addActionListener(listener);
+        setActionCommand();
+        setButtonsColors();
+
     }
 
     private void initComponents() {
-
-        setLayout(new BorderLayout());
-        setBorder(BorderFactory.createTitledBorder("Evaluar entradas"));
-
         table = new JTable();
         scroll = new JScrollPane(table);
-        add(scroll, BorderLayout.CENTER);
-
-        evaluateBtn = new JButton("Evaluar entradas");
-        traceBtn = new JButton("Mirar trazabilidad");
-        epsilonBtn = new JButton("Agregar Epsilon");
-
+        evaluateBtn = new OptionButton("Evaluar entradas");
+        traceBtn = new OptionButton("Mirar trazabilidad");
+        epsilonBtn = new OptionButton("Agregar Epsilon");
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonsPanel.add(evaluateBtn);
         buttonsPanel.add(traceBtn);
         buttonsPanel.add(epsilonBtn);
+    }
 
+    public void conf(){
+        setLayout(new BorderLayout());
+        setBorder(BorderFactory.createTitledBorder("Evaluar entradas"));
+        add(scroll, BorderLayout.CENTER);
         add(buttonsPanel, BorderLayout.SOUTH);
     }
 
@@ -61,9 +66,34 @@ public class EvaluateAutomatonPanel extends JPanel {
         model.setValueAt("", 0, 1);
     }
 
-    public JTable getTable() { return table; }
-    public DefaultTableModel getModel() { return model; }
-    public JButton getEvaluateBtn() { return evaluateBtn; }
-    public JButton getTraceBtn() { return traceBtn; }
-    public JButton getEpsilonBtn() { return epsilonBtn; }
+    public void addActionListener(ActionListener listener){
+        evaluateBtn.addActionListener(listener);
+        traceBtn.addActionListener(listener);
+        epsilonBtn.addActionListener(listener);
+    }
+
+    public void setActionCommand(){
+        evaluateBtn.setActionCommand("evaluateBtn");
+        traceBtn.setActionCommand("traceBtn");
+        epsilonBtn.setActionCommand("epsilonBtn");
+    }
+
+    public void setButtonsColors(){
+        evaluateBtn.setBackground(Global.green);
+        traceBtn.setBackground(Global.blue);
+        epsilonBtn.setBackground(Global.orange);
+    }
+
+    public ArrayList<String> getInputs() {
+        ArrayList<String> inputs = new ArrayList<>();
+        for(int i=0;i<model.getRowCount();i++){
+            String input = model.getValueAt(i,0).toString();
+            if(!input.isEmpty()){
+                inputs.add(input);
+            }
+        }
+        return inputs;
+    }
+
+
 }

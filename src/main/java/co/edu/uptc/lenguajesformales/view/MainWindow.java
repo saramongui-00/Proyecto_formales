@@ -1,5 +1,6 @@
 package co.edu.uptc.lenguajesformales.view;
 
+import co.edu.uptc.lenguajesformales.dto.AutomatonDTO;
 import co.edu.uptc.lenguajesformales.dto.TransitionDTO;
 
 import javax.swing.*;
@@ -8,7 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class MainWindow extends JFrame implements ActionListener {
+public class MainWindow extends JFrame {
     private SideMenu sideMenu;
     private JPanel centralPanel;
 
@@ -17,28 +18,24 @@ public class MainWindow extends JFrame implements ActionListener {
 
     private ShowAutomatonPanel showAutomatonPanel;
 
-    public MainWindow(){
-        sideMenu = new SideMenu(this);
+    public MainWindow(ActionListener listener){
+        sideMenu = new SideMenu(listener);
         centralPanel = new JPanel();
         showAutomatonPanel = new ShowAutomatonPanel();
-        createAutomatonPanel = new CreateAutomatonPanel(this);
-        evaluateAutomatonPanel = new EvaluateAutomatonPanel();
+        createAutomatonPanel = new CreateAutomatonPanel(listener);
+        evaluateAutomatonPanel = new EvaluateAutomatonPanel(listener);
         conf();
     }
 
     public void conf(){
         centralPanel.setLayout(new BoxLayout(centralPanel,BoxLayout.X_AXIS));
-
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         add(sideMenu, BorderLayout.WEST);
         centralPanel.add(createAutomatonPanel);
         centralPanel.add(showAutomatonPanel);
-
         add(centralPanel);
-
-
         setVisible(true);
     }
 
@@ -67,33 +64,30 @@ public class MainWindow extends JFrame implements ActionListener {
         JOptionPane.showOptionDialog(this, "¿Que acción desea realizar?", "Guardar cambios", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
     }
 
-    public void generateAutomaton(){
+    public AutomatonDTO getAutomaton(){
+        return createAutomatonPanel.createAutomaton();
+    }
+
+    public boolean generateAutomaton(){
+        boolean val = false;
         if (createAutomatonPanel.getStates().isEmpty()) {
             showError("Debe existir al menos un estado");
         } else if (createAutomatonPanel.getAlphabet().isEmpty()) {
-            showError("Debe existir al menos un símbolo en el alfabeto.");
+            showError("Debe existir al menos un símbolo en el alfabeto");
         } else if (createAutomatonPanel.getTransitions().isEmpty()) {
             showError("Debe existir al menos una transicion");
         } else if(createAutomatonPanel.getFinalStates().isEmpty()) {
             showError("Debe existir al menos un estado final");
         } else{
             showAutomatonPanel.setAutomaton(createAutomatonPanel.createAutomaton());
+            val = true;
         }
+        return val;
     }
 
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        switch (e.getActionCommand()){
-            case "createAutomatonBtn": changeCreateAutomatonPanel();
-                break;
-            case "evaluateAutomatonBtn": changeEvaluateAutomatonPanel();
-                break;
-            case "saveAutomatonBtn":saveAutomatonAlert();
-                break;
-            case "generateAutomatonBtn": generateAutomaton();
-                break;
-        }
-
+    public ArrayList<String> getInputs(){
+        return evaluateAutomatonPanel.getInputs();
     }
+
 }
