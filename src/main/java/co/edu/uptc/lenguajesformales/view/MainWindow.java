@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class MainWindow extends JFrame {
     private SideMenu sideMenu;
@@ -79,7 +80,6 @@ public class MainWindow extends JFrame {
         } else if(createAutomatonPanel.getFinalStates().isEmpty()) {
             showError("Debe existir al menos un estado final");
         } else{
-            showAutomatonPanel.setAutomaton(createAutomatonPanel.createAutomaton());
             val = true;
         }
         return val;
@@ -88,6 +88,14 @@ public class MainWindow extends JFrame {
 
     public ArrayList<String> getInputs(){
         return evaluateAutomatonPanel.getInputs();
+    }
+
+    public void showEvaluationResults(Map<String, Boolean> results){
+        evaluateAutomatonPanel.showEvaluationResults(results);
+    }
+
+    public void drawAutomaton(){
+        showAutomatonPanel.setAutomaton(createAutomatonPanel.createAutomaton());
     }
 
 }

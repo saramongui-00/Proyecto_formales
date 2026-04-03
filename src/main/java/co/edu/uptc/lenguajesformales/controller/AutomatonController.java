@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class AutomatonController implements ActionListener {
     private Automaton automaton;
@@ -43,15 +44,47 @@ public class AutomatonController implements ActionListener {
     }
 
     public void evaluateInputs(){
-        ArrayList<String>inputs = view.getInputs();
-        inputs.forEach(i -> System.out.println(i));
+        ArrayList<String> inputs = view.getInputs();
+        Map<String, Boolean> results = automaton.evaluateBatchAutomaton(inputs);
+        view.showEvaluationResults(results);
     }
 
-    public void generateAutomaton(){
-        if(view.generateAutomaton()){
-            AutomatonDTO tempAut = view.getAutomaton();
-            automaton = new Automaton(tempAut.getType(), tempAut.getStates(), tempAut.getAlphabet(),
-                    transitionMapper(tempAut.getTransitions()), tempAut.getInitialState(), tempAut.getFinalStates());
+    public void generateAutomaton() {
+
+        if (!view.generateAutomaton()) return;
+
+        AutomatonDTO dto = view.getAutomaton();
+
+        Automaton newAutomaton = new Automaton(
+                dto.getType(),
+                dto.getStates(),
+                dto.getAlphabet(),
+                transitionMapper(dto.getTransitions()),
+                dto.getInitialState(),
+                dto.getFinalStates()
+        );
+
+        boolean isValid = false;
+
+        switch (dto.getType()) {
+            case "DFA":
+                isValid = newAutomaton.validateDFA();
+                if (!isValid) {
+                    view.showError("DFA no válido");
+                }
+                break;
+
+            case "NFA":
+                isValid = newAutomaton.validateNFA();
+                if (!isValid) {
+                    view.showError("NFA no válido");
+                }
+                break;
+        }
+
+        if (isValid) {
+            this.automaton = newAutomaton;
+            view.drawAutomaton();
         }
     }
 

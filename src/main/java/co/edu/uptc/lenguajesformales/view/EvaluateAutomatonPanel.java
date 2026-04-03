@@ -5,17 +5,16 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class EvaluateAutomatonPanel extends JPanel {
 
     private JTable table;
     private DefaultTableModel model;
     private JScrollPane scroll;
-
     private OptionButton evaluateBtn;
     private OptionButton traceBtn;
     private OptionButton epsilonBtn;
-
     private JPanel buttonsPanel;
 
     public EvaluateAutomatonPanel(ActionListener listener) {
@@ -86,14 +85,36 @@ public class EvaluateAutomatonPanel extends JPanel {
 
     public ArrayList<String> getInputs() {
         ArrayList<String> inputs = new ArrayList<>();
-        for(int i=0;i<model.getRowCount();i++){
-            String input = model.getValueAt(i,0).toString();
-            if(!input.isEmpty()){
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+
+            Object cell = model.getValueAt(i, 0);
+            if (cell == null) continue;   // ← evitar NullPointer
+
+            String input = cell.toString().trim();
+            if (!input.isEmpty()) {
                 inputs.add(input);
             }
         }
+
         return inputs;
     }
 
+    public void showEvaluationResults(Map<String, Boolean> results) {
+        for (int row = 0; row < model.getRowCount(); row++) {
+            model.setValueAt("", row, 1);
+        }
+        for (int row = 0; row < model.getRowCount(); row++) {
+            Object value = model.getValueAt(row, 0);
+            if (value == null) continue;
 
+            String input = value.toString().trim();
+            if (input.isEmpty()) continue;
+
+            if (results.containsKey(input)) {
+                boolean accepted = results.get(input);
+                model.setValueAt(accepted ? "Aceptado" : "Rechazado", row, 1);
+            }
+        }
+    }
 }
