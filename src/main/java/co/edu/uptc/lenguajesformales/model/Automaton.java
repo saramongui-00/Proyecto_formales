@@ -227,6 +227,7 @@ public class Automaton {
             throw new IllegalStateException("AFD inválido");
         }
 
+
         String currentState = initialState;
         for (char c: input.toCharArray()){
             String symbol = String.valueOf(c);

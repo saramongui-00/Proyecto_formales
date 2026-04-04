@@ -1,14 +1,16 @@
 package co.edu.uptc.lenguajesformales.view;
 
 import co.edu.uptc.lenguajesformales.dto.AutomatonDTO;
-import co.edu.uptc.lenguajesformales.dto.TransitionDTO;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.List;
+
 
 public class MainWindow extends JFrame {
     private SideMenu sideMenu;
@@ -18,6 +20,10 @@ public class MainWindow extends JFrame {
     private EvaluateAutomatonPanel evaluateAutomatonPanel;
 
     private ShowAutomatonPanel showAutomatonPanel;
+    private JFileChooser exportFile;
+    private JFileChooser importFile;
+    private AutomatonTraceDialog automatonTraceDialog;
+
 
     public MainWindow(ActionListener listener){
         sideMenu = new SideMenu(listener);
@@ -25,6 +31,8 @@ public class MainWindow extends JFrame {
         showAutomatonPanel = new ShowAutomatonPanel();
         createAutomatonPanel = new CreateAutomatonPanel(listener);
         evaluateAutomatonPanel = new EvaluateAutomatonPanel(listener);
+        importFile = new JFileChooser();
+        exportFile = new JFileChooser();
         conf();
     }
 
@@ -60,9 +68,51 @@ public class MainWindow extends JFrame {
         JOptionPane.showMessageDialog(this,message,"Error",JOptionPane.ERROR_MESSAGE);
     }
 
-    public void saveAutomatonAlert(){
+    public void showMessage(String message){
+        JOptionPane.showMessageDialog(this,message,"Información",JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public int saveAutomatonAlert(){
         String[]options = {"Exportar", "Importar", "Cancelar"};
-        JOptionPane.showOptionDialog(this, "¿Que acción desea realizar?", "Guardar cambios", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+        return JOptionPane.showOptionDialog(this, "¿Que acción desea realizar?", "Guardar cambios", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+    }
+
+    public String exportAutomaton(){
+        exportFile.setDialogTitle("Guardar autómata como JSON");
+
+        FileNameExtensionFilter filter =
+                new FileNameExtensionFilter("Archivos JSON (*.json)", "json");
+        exportFile.setFileFilter(filter);
+        exportFile.setSelectedFile(new File("automata.json"));
+
+        int result = exportFile.showSaveDialog(null);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = exportFile.getSelectedFile();
+            if (!file.getAbsolutePath().toLowerCase().endsWith(".json")) {
+                file = new File(file.getAbsolutePath() + ".json");
+            }
+            return file.getAbsolutePath();
+        }
+
+        return null;
+    }
+
+    public String importAutomaton(){
+        importFile.setDialogTitle("Select JSON file");
+
+        FileNameExtensionFilter filter =
+                new FileNameExtensionFilter("JSON Files (*.json)", "json");
+        importFile.setFileFilter(filter);
+
+        int result = importFile.showOpenDialog(null);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = importFile.getSelectedFile();
+            return selectedFile.getAbsolutePath();
+        }
+
+        return null;
     }
 
     public AutomatonDTO getAutomaton(){
@@ -96,6 +146,18 @@ public class MainWindow extends JFrame {
 
     public void drawAutomaton(){
         showAutomatonPanel.setAutomaton(createAutomatonPanel.createAutomaton());
+    }
+
+    public void loadAutomaton(AutomatonDTO automaton){
+        createAutomatonPanel.loadAutomaton(automaton);
+    }
+
+    public String getInputToTrace(){
+        return evaluateAutomatonPanel.getInputToTrace();
+    }
+
+    public void initTraceDialog(int rowCount, List<String> detailedTrace){
+        automatonTraceDialog = new AutomatonTraceDialog(rowCount, detailedTrace);
     }
 
 }

@@ -21,12 +21,10 @@ public class ShowAutomatonPanel extends JPanel {
     public void setAutomaton(AutomatonDTO automaton) {
         DirectedSparseMultigraph<String, String> graph = new DirectedSparseMultigraph<>();
 
-        // Agregar todos los estados
         for (String state : automaton.getStates()) {
             graph.addVertex(state);
         }
 
-        // Agrupar transiciones por estado origen y destino
         Map<String, Map<String, Integer>> transitionCount = new HashMap<>();
         Map<String, String> transitionSymbols = new HashMap<>();
 
@@ -39,21 +37,17 @@ public class ShowAutomatonPanel extends JPanel {
             transitionSymbols.put(key, t.getSymbol());
         }
 
-        // Agregar aristas al grafo
         int edgeId = 0;
         for (co.edu.uptc.lenguajesformales.dto.TransitionDTO t : automaton.getTransitions()) {
             String edgeName = t.getSymbol() + "_" + edgeId++;
             graph.addEdge(edgeName, t.getFromState(), t.getToState());
         }
 
-        // Para self-loops con una sola transición, agregar una arista invisible adicional
-        // para forzar que la etiqueta sea visible
         Set<String> processedSelfLoops = new HashSet<>();
         for (co.edu.uptc.lenguajesformales.dto.TransitionDTO t : automaton.getTransitions()) {
             if (t.getFromState().equals(t.getToState())) {
                 String state = t.getFromState();
                 if (!processedSelfLoops.contains(state)) {
-                    // Contar cuántas transiciones recursivas tiene este estado
                     int count = 0;
                     for (co.edu.uptc.lenguajesformales.dto.TransitionDTO t2 : automaton.getTransitions()) {
                         if (t2.getFromState().equals(state) && t2.getToState().equals(state)) {
@@ -61,7 +55,6 @@ public class ShowAutomatonPanel extends JPanel {
                         }
                     }
 
-                    // Si solo hay una transición recursiva, agregamos una arista dummy
                     if (count == 1) {
                         String dummyEdge = "dummy_" + state + "_" + edgeId++;
                         graph.addEdge(dummyEdge, state, state);
@@ -79,18 +72,16 @@ public class ShowAutomatonPanel extends JPanel {
         vv.getRenderContext().setVertexLabelTransformer(v -> v);
         vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
 
-        // Transformador para etiquetas de aristas
         vv.getRenderContext().setEdgeLabelTransformer(e -> {
             if (e.toString().startsWith("dummy_")) {
-                return ""; // Las aristas dummy no muestran etiqueta
+                return "";
             }
             return e.toString().split("_")[0];
         });
 
-        // Transformador para el color de las aristas dummy (hacerlas invisibles o muy claras)
         vv.getRenderContext().setEdgeDrawPaintTransformer(e -> {
             if (e.toString().startsWith("dummy_")) {
-                return new Color(255, 255, 255, 0); // Completamente transparente
+                return new Color(255, 255, 255, 0);
             }
             return Color.BLACK;
         });

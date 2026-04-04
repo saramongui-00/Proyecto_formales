@@ -4,7 +4,6 @@ import co.edu.uptc.lenguajesformales.dto.AutomatonDTO;
 import co.edu.uptc.lenguajesformales.dto.TransitionDTO;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -12,6 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 import java.util.ArrayList;
 
 public class CreateAutomatonPanel extends JPanel {
@@ -216,7 +216,6 @@ public class CreateAutomatonPanel extends JPanel {
         JOptionPane.showMessageDialog(this,message,"Error",JOptionPane.ERROR_MESSAGE);
     }
 
-    // GETTERS
 
     public String getAutomatonType(){
         return tAutonatonCB.getSelectedItem().toString();
@@ -300,4 +299,105 @@ public class CreateAutomatonPanel extends JPanel {
     public AutomatonDTO createAutomaton(){
         return new AutomatonDTO(getAutomatonType(), getStates(), getAlphabet(), getTransitions(), getInitialState(), getFinalStates());
     }
+
+    public void loadAutomaton(AutomatonDTO automaton) {
+
+        if (automaton == null) return;
+
+        clearTable();
+        tAutonatonCB.setSelectedItem(automaton.getType());
+        loadAlphabetColumns(automaton.getAlphabet());
+        loadStatesRows(automaton.getStates());
+        markInitialState(automaton.getInitialState());
+        markFinalStates(automaton.getFinalStates());
+        loadTransitions(automaton.getTransitions());
+    }
+
+    private void clearTable() {
+        model.setRowCount(0);
+        model.setColumnCount(3);
+    }
+
+    private void loadAlphabetColumns(List<String> alphabet) {
+        for (String symbol : alphabet) {
+            model.addColumn(symbol);
+        }
+    }
+
+    private void loadStatesRows(List<String> states) {
+
+        for (String state : states) {
+            Object[] row = new Object[model.getColumnCount()];
+            row[0] = false;
+            row[1] = false;
+            row[2] = state;
+
+            model.addRow(row);
+        }
+    }
+
+    private void markInitialState(String initialState) {
+        if (initialState == null) return;
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String state = model.getValueAt(i, 2).toString();
+            if (state.equals(initialState)) {
+                model.setValueAt(true, i, 0);
+                return;
+            }
+        }
+    }
+
+    private void markFinalStates(List<String> finals) {
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String state = model.getValueAt(i, 2).toString();
+            if (finals.contains(state)) {
+                model.setValueAt(true, i, 1);
+            }
+        }
+    }
+
+    private void loadTransitions(List<TransitionDTO> transitions) {
+
+        for (TransitionDTO t : transitions) {
+
+            int row = findRowByState(t.getFromState());
+            int col = findColumnBySymbol(t.getSymbol());
+
+            if (row == -1 || col == -1) continue;
+
+            Object currentCell = model.getValueAt(row, col);
+
+            if (currentCell == null || currentCell.toString().isEmpty()) {
+                model.setValueAt(t.getToState(), row, col);
+            } else {
+                String updated = currentCell.toString() + "," + t.getToState();
+                model.setValueAt(updated, row, col);
+            }
+        }
+    }
+
+    private int findRowByState(String state) {
+        for (int i = 0; i < model.getRowCount(); i++) {
+            if (model.getValueAt(i, 2).toString().equals(state))
+                return i;
+        }
+        return -1;
+    }
+
+    private int findColumnBySymbol(String symbol) {
+        for (int col = 3; col < model.getColumnCount(); col++) {
+            String header = table.getColumnModel()
+                    .getColumn(col)
+                    .getHeaderValue()
+                    .toString();
+
+            if (header.equals(symbol))
+                return col;
+        }
+        return -1;
+    }
+
+
 }

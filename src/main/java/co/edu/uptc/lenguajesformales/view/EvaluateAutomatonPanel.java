@@ -83,13 +83,16 @@ public class EvaluateAutomatonPanel extends JPanel {
         epsilonBtn.setBackground(Global.orange);
     }
 
+    public String getInputToTrace(){
+        return model.getValueAt(table.getSelectedRow(),0).toString();
+    }
+
     public ArrayList<String> getInputs() {
         ArrayList<String> inputs = new ArrayList<>();
-
         for (int i = 0; i < model.getRowCount(); i++) {
 
             Object cell = model.getValueAt(i, 0);
-            if (cell == null) continue;   // ← evitar NullPointer
+            if (cell == null) continue;
 
             String input = cell.toString().trim();
             if (!input.isEmpty()) {
