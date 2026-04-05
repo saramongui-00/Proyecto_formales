@@ -13,6 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class CreateAutomatonPanel extends JPanel {
 
@@ -205,15 +206,35 @@ public class CreateAutomatonPanel extends JPanel {
     }
 
     private void removeSymbol() {
-        int col = table.getSelectedColumn();
-        if(col < 3){
+        int viewCol = table.getSelectedColumn();
+        if(viewCol < 3){
             showError("Seleccione una columna de símbolo.");
             return;
         }
 
-        TableColumn column = table.getColumnModel().getColumn(col);
-        table.removeColumn(column);
-        model.setColumnCount(model.getColumnCount()-1);
+        int modelCol = table.convertColumnIndexToModel(viewCol);
+
+        Vector<String> columnNames = new Vector<>();
+        for (int col = 0; col < model.getColumnCount(); col++) {
+            if (col != modelCol) {
+                columnNames.add(model.getColumnName(col));
+            }
+        }
+
+        Vector<Vector<Object>> rows = new Vector<>();
+        for (int row = 0; row < model.getRowCount(); row++) {
+            Vector<Object> newRow = new Vector<>();
+            for (int col = 0; col < model.getColumnCount(); col++) {
+                if (col != modelCol) {
+                    newRow.add(model.getValueAt(row, col));
+                }
+            }
+            rows.add(newRow);
+        }
+
+        model.setDataVector(rows, columnNames);
+        table.clearSelection();
+        table.setRowHeight(25);
     }
 
     public void showError(String message){
