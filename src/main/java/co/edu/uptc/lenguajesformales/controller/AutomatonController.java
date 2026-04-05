@@ -42,6 +42,7 @@ public class AutomatonController implements ActionListener {
             case "traceBtn": traceAutomaton();
                 break;
             case "epsilonBtn":
+                view.addEpsilonInput();
                 break;
 
         }

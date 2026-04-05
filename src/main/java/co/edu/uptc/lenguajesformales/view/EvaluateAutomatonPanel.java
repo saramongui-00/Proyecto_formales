@@ -2,6 +2,8 @@ package co.edu.uptc.lenguajesformales.view;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -9,12 +11,15 @@ import java.util.Map;
 
 public class EvaluateAutomatonPanel extends JPanel {
 
+    private static final String EPSILON_SYMBOL = "ε";
+
     private JTable table;
     private DefaultTableModel model;
     private JScrollPane scroll;
     private OptionButton evaluateBtn;
     private OptionButton traceBtn;
     private OptionButton epsilonBtn;
+    private OptionButton clearRowsBtn;
     private JPanel buttonsPanel;
 
     public EvaluateAutomatonPanel(ActionListener listener) {
@@ -33,10 +38,13 @@ public class EvaluateAutomatonPanel extends JPanel {
         evaluateBtn = new OptionButton("Evaluar entradas");
         traceBtn = new OptionButton("Mirar trazabilidad");
         epsilonBtn = new OptionButton("Agregar Epsilon");
+        clearRowsBtn = new OptionButton("Limpiar filas");
+        clearRowsBtn.addActionListener(e -> clearAllRows());
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonsPanel.add(evaluateBtn);
         buttonsPanel.add(traceBtn);
         buttonsPanel.add(epsilonBtn);
+        buttonsPanel.add(clearRowsBtn);
     }
 
     public void conf(){
@@ -81,26 +89,81 @@ public class EvaluateAutomatonPanel extends JPanel {
         evaluateBtn.setBackground(Global.green);
         traceBtn.setBackground(Global.blue);
         epsilonBtn.setBackground(Global.orange);
+        clearRowsBtn.setBackground(Global.red);
     }
 
     public String getInputToTrace(){
-        return model.getValueAt(table.getSelectedRow(),0).toString();
+        commitActiveEdit();
+
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow < 0) {
+            throw new IllegalStateException("Seleccione una entrada para ver la trazabilidad");
+        }
+
+        Object value = model.getValueAt(selectedRow, 0);
+        return normalizeInput(value == null ? "" : value.toString());
     }
 
     public ArrayList<String> getInputs() {
+        commitActiveEdit();
+
         ArrayList<String> inputs = new ArrayList<>();
         for (int i = 0; i < model.getRowCount(); i++) {
 
             Object cell = model.getValueAt(i, 0);
             if (cell == null) continue;
 
-            String input = cell.toString().trim();
-            if (!input.isEmpty()) {
+            String input = normalizeInput(cell.toString());
+            if (!input.isEmpty() || EPSILON_SYMBOL.equals(cell.toString().trim())) {
                 inputs.add(input);
             }
         }
 
         return inputs;
+    }
+
+    private void commitActiveEdit() {
+        if (table.isEditing()) {
+            TableCellEditor editor = table.getCellEditor();
+            if (editor != null) {
+                editor.stopCellEditing();
+            }
+        }
+    }
+
+    public void addEpsilonInput() {
+        int row = table.getSelectedRow();
+
+        if (row < 0) {
+            row = findFirstEmptyInputRow();
+        }
+
+        if (row < 0) {
+            model.addRow(new Object[]{"", ""});
+            row = model.getRowCount() - 1;
+        }
+
+        model.setValueAt(EPSILON_SYMBOL, row, 0);
+        table.setRowSelectionInterval(row, row);
+        table.requestFocusInWindow();
+    }
+
+    private int findFirstEmptyInputRow() {
+        for (int i = 0; i < model.getRowCount(); i++) {
+            Object cell = model.getValueAt(i, 0);
+            if (cell == null || cell.toString().trim().isEmpty()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private String normalizeInput(String rawInput) {
+        String input = rawInput == null ? "" : rawInput.trim();
+        if (EPSILON_SYMBOL.equals(input) || "epsilon".equalsIgnoreCase(input)) {
+            return "";
+        }
+        return input;
     }
 
     public void showEvaluationResults(Map<String, Boolean> results) {
@@ -111,13 +174,23 @@ public class EvaluateAutomatonPanel extends JPanel {
             Object value = model.getValueAt(row, 0);
             if (value == null) continue;
 
-            String input = value.toString().trim();
-            if (input.isEmpty()) continue;
+            String rawInput = value.toString().trim();
+            String input = normalizeInput(rawInput);
+            if (input.isEmpty() && !EPSILON_SYMBOL.equals(rawInput)) continue;
 
             if (results.containsKey(input)) {
                 boolean accepted = results.get(input);
                 model.setValueAt(accepted ? "Aceptado" : "Rechazado", row, 1);
             }
         }
+    }
+
+    private void clearAllRows() {
+        commitActiveEdit();
+        for (int row = 0; row < model.getRowCount(); row++) {
+            model.setValueAt("", row, 0);
+            model.setValueAt("", row, 1);
+        }
+        table.clearSelection();
     }
 }

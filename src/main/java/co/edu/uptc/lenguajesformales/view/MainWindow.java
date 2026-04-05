@@ -14,7 +14,7 @@ import java.util.List;
 
 public class MainWindow extends JFrame {
     private SideMenu sideMenu;
-    private JPanel centralPanel;
+    private JSplitPane contentSplitPane;
 
     private CreateAutomatonPanel createAutomatonPanel;
     private EvaluateAutomatonPanel evaluateAutomatonPanel;
@@ -27,7 +27,6 @@ public class MainWindow extends JFrame {
 
     public MainWindow(ActionListener listener){
         sideMenu = new SideMenu(listener);
-        centralPanel = new JPanel();
         showAutomatonPanel = new ShowAutomatonPanel();
         createAutomatonPanel = new CreateAutomatonPanel(listener);
         evaluateAutomatonPanel = new EvaluateAutomatonPanel(listener);
@@ -37,29 +36,33 @@ public class MainWindow extends JFrame {
     }
 
     public void conf(){
-        centralPanel.setLayout(new BoxLayout(centralPanel,BoxLayout.X_AXIS));
+        contentSplitPane = createSplitPane(createAutomatonPanel);
+
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         add(sideMenu, BorderLayout.WEST);
-        centralPanel.add(createAutomatonPanel);
-        centralPanel.add(showAutomatonPanel);
-        add(centralPanel);
+        add(contentSplitPane, BorderLayout.CENTER);
         setVisible(true);
     }
 
+    private JSplitPane createSplitPane(JComponent leftPanel){
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, showAutomatonPanel);
+        splitPane.setContinuousLayout(true);
+        splitPane.setResizeWeight(0.55);
+        splitPane.setOneTouchExpandable(true);
+        splitPane.setDividerLocation(0.55);
+        return splitPane;
+    }
+
     public void changeCreateAutomatonPanel(){
-        centralPanel.removeAll();
-        centralPanel.add(createAutomatonPanel);
-        centralPanel.add(showAutomatonPanel);
+        contentSplitPane.setLeftComponent(createAutomatonPanel);
+        revalidate();
         repaint();
     }
 
     public void changeEvaluateAutomatonPanel(){
-        centralPanel.removeAll();
-        centralPanel.add(evaluateAutomatonPanel);
-        centralPanel.add(showAutomatonPanel);
-        centralPanel.repaint();
+        contentSplitPane.setLeftComponent(evaluateAutomatonPanel);
         revalidate();
         repaint();
     }
@@ -138,6 +141,10 @@ public class MainWindow extends JFrame {
 
     public ArrayList<String> getInputs(){
         return evaluateAutomatonPanel.getInputs();
+    }
+
+    public void addEpsilonInput(){
+        evaluateAutomatonPanel.addEpsilonInput();
     }
 
     public void showEvaluationResults(Map<String, Boolean> results){

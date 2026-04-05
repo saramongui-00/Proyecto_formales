@@ -5,6 +5,8 @@ import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 import javax.swing.*;
 import java.awt.*;
@@ -69,6 +71,10 @@ public class ShowAutomatonPanel extends JPanel {
         VisualizationViewer<String, String> vv = new VisualizationViewer<>(layout);
         vv.setPreferredSize(new Dimension(600, 450));
 
+        DefaultModalGraphMouse<String, String> graphMouse = new DefaultModalGraphMouse<>();
+        graphMouse.setMode(ModalGraphMouse.Mode.PICKING);
+        vv.setGraphMouse(graphMouse);
+
         vv.getRenderContext().setVertexLabelTransformer(v -> v);
         vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
 
@@ -86,13 +92,14 @@ public class ShowAutomatonPanel extends JPanel {
             return Color.BLACK;
         });
 
-        vv.getRenderContext().setVertexFillPaintTransformer(
-                new FinalStateRenderer(automaton)
-        );
+        FinalStateRenderer finalStateRenderer = new FinalStateRenderer(automaton);
+        vv.getRenderContext().setVertexFillPaintTransformer(finalStateRenderer);
 
         vv.getRenderContext().setVertexShapeTransformer(v ->
                 new Ellipse2D.Double(-20, -20, 40, 40)
         );
+
+        vv.getRenderer().setVertexRenderer(finalStateRenderer);
 
         removeAll();
         setLayout(new BorderLayout());

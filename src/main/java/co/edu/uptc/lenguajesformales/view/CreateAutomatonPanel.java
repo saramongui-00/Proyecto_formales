@@ -170,8 +170,12 @@ public class CreateAutomatonPanel extends JPanel {
     private void addSymbol() {
         String symbol = JOptionPane.showInputDialog(this,"Ingrese símbolo:");
         if(symbol==null) return;
-        symbol = symbol.trim();
-        if(symbol.isEmpty()){ showError("Símbolo vacío"); return; }
+
+        if(symbol.trim().isEmpty()){
+            symbol = "ε";
+        } else {
+            symbol = symbol.trim();
+        }
 
         for(int i=3;i<table.getColumnModel().getColumnCount();i++){
             String existing = table.getColumnModel().getColumn(i).getHeaderValue().toString();
