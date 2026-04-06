@@ -8,10 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 
-//Representa un automata finito (AFD ó AFN)
 public class Automaton {
     
-    private AutomatonType type;
     private List<String> states;
     private List<String> alphabet;
     private List<Transition> transitions;
@@ -25,9 +23,8 @@ public class Automaton {
         finalStates = new ArrayList<>();
     }
 
-    public Automaton(String type, List<String> states, List<String> alphabet,
+    public Automaton(List<String> states, List<String> alphabet,
                      List<Transition> transitions, String initialState, List<String> finalStates) {
-        setAutomatonType(type);
         this.states = states;
         this.alphabet = alphabet;
         this.transitions = transitions;
@@ -35,21 +32,6 @@ public class Automaton {
         this.finalStates = finalStates;
     }
 
-    public void setAutomatonType(String type){
-        if(type.equals("DFA")){
-            setType(AutomatonType.DFA);
-        }if(type.equals("NFA")){
-            setType(AutomatonType.NFA);
-        }
-    }
-
-    public AutomatonType getType() {
-        return type;
-    }
-
-    public void setType(AutomatonType type) {
-        this.type = type;
-    }
 
     public List<String> getStates() {
         return states;
@@ -104,7 +86,6 @@ public class Automaton {
     }
     
     public void addTransition(Transition transition){
-        if (type == AutomatonType.DFA) {
             for (Transition t : transitions) {
                 if (t.getFromState().equals(transition.getFromState()) &&
                     t.getSymbol().equals(transition.getSymbol())) {
@@ -114,7 +95,6 @@ public class Automaton {
                         transition.getSymbol());
                 }
             }
-        }
         transitions.add(transition);
     }
 
@@ -187,24 +167,10 @@ public class Automaton {
         return true;
     }
 
-    public boolean validateNFA() {
-        if (initialState == null || !states.contains(initialState)) return false;
-        for (String f : finalStates) if (!states.contains(f)) return false;
-        for (Transition t : transitions) {
-            if (!states.contains(t.getFromState()) || !states.contains(t.getToState()) ||
-                !alphabet.contains(t.getSymbol())) return false;
-        }
-        return true;
-    }
-
     public boolean evaluateAutomaton(String input) {
-        if (type == AutomatonType.DFA) {
-            if (!validateDFA()) throw new IllegalStateException("DFA inválido");
-            return evaluateAFD(input);
-        } else {
-            if (!validateNFA()) throw new IllegalStateException("NFA inválido");
-            return evaluateNFA(input);
-        }
+        if (!validateDFA()) throw new IllegalStateException("DFA inválido");
+        return evaluateAFD(input);
+
     }
 
     public Map<String, Boolean> evaluateBatchAutomaton(List<String> inputs) {
@@ -219,9 +185,6 @@ public class Automaton {
     public boolean evaluateAFD(String input){
         if (input == null) {
             throw new IllegalArgumentException("La cadena no puede ser null");
-        }
-        if (type != AutomatonType.DFA) {
-            throw new IllegalStateException("El automata no es determinista (AFD)");
         }
         if (!validateDFA()) {
             throw new IllegalStateException("AFD inválido");
@@ -250,10 +213,6 @@ public class Automaton {
         if (input == null) {
             throw new IllegalArgumentException("La cadena no puede ser null");
         }
-        if (type != AutomatonType.DFA) {
-            throw new IllegalStateException("El automata no es determinista (AFD)");
-        }
-
         if (!validateDFA()) {
             throw new IllegalStateException("AFD inválido");
         }
@@ -287,36 +246,10 @@ public class Automaton {
         return trace;
     }
 
-    public boolean evaluateNFA(String input) {
-        if (type != AutomatonType.NFA)
-            throw new IllegalStateException("El automata no es NFA");
-        if (!validateNFA())
-            throw new IllegalStateException("DFA inválido");
 
-        Set<String> currentStates = new HashSet<>();
-        currentStates.add(initialState);
-
-        for (char c : input.toCharArray()) {
-            String symbol = String.valueOf(c);
-            if (!alphabet.contains(symbol)) return false;
-
-            Set<String> nextStates = new HashSet<>();
-            for (String state : currentStates) {
-                List<Transition> transitions = getTransitions(state, symbol);
-                for (Transition t : transitions) nextStates.add(t.getToState());
-            }
-
-            if (nextStates.isEmpty()) return false;
-            currentStates = nextStates;
-        }
-
-        for (String state : currentStates) if (isFinalState(state)) return true;
-        return false;
-    }
 
     public void print() {
         System.out.println("\nAUTOMATON");
-        System.out.println("Type: " + type);
         System.out.println("States: " + states);
         System.out.println("Alphabet: " + alphabet);
         System.out.println("Initial State: " + initialState);

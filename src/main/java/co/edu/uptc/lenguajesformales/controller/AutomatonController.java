@@ -88,7 +88,7 @@ public class AutomatonController implements ActionListener {
         try {
             String filePath = view.importAutomaton();
             automaton = persistence.importFromJson(filePath);
-            view.loadAutomaton(new AutomatonDTO(automaton.getType().toString(), automaton.getStates(), automaton.getAlphabet(),
+            view.loadAutomaton(new AutomatonDTO(automaton.getStates(), automaton.getAlphabet(),
                     transitionDTOMapper(automaton.getTransitions()), automaton.getInitialState(), automaton.getFinalStates()));
         } catch (Exception e) {
             view.showError(e.getMessage());
@@ -116,30 +116,14 @@ public class AutomatonController implements ActionListener {
 
         AutomatonDTO dto = view.getAutomaton();
 
-        Automaton newAutomaton = new Automaton(dto.getType(),dto.getStates(),dto.getAlphabet(),transitionMapper(dto.getTransitions()),
+        Automaton newAutomaton = new Automaton(dto.getStates(),dto.getAlphabet(),transitionMapper(dto.getTransitions()),
                 dto.getInitialState(),dto.getFinalStates());
 
-        boolean isValid = false;
-
-        switch (dto.getType()) {
-            case "DFA":
-                isValid = newAutomaton.validateDFA();
-                if (!isValid) {
-                    view.showError("DFA no válido");
-                }
-                break;
-
-            case "NFA":
-                isValid = newAutomaton.validateNFA();
-                if (!isValid) {
-                    view.showError("NFA no válido");
-                }
-                break;
-        }
-
-        if (isValid) {
+        if (newAutomaton.validateDFA()) {
             this.automaton = newAutomaton;
             view.drawAutomaton();
+        }else{
+            view.showError("DFA no válido");
         }
     }
 

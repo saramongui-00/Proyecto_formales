@@ -19,7 +19,6 @@ public class CreateAutomatonPanel extends JPanel {
 
     private JTable table;
     private DefaultTableModel model;
-    private JComboBox<String> tAutonatonCB;
 
     private OptionButton addStateBtn;
     private OptionButton removeStateBtn;
@@ -41,7 +40,6 @@ public class CreateAutomatonPanel extends JPanel {
 
     private void initComponents() {
         top = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        tAutonatonCB = new JComboBox<>(new String[]{"DFA","NFA"});
         table = new JTable();
         addStateBtn = new OptionButton("Crear Estado");
         removeStateBtn = new OptionButton("Eliminar estado");
@@ -60,8 +58,7 @@ public class CreateAutomatonPanel extends JPanel {
     }
 
     public void initPanels(){
-        top.add(new JLabel("Tipo de autómata"));
-        top.add(tAutonatonCB);
+
 
         bottom.add(addStateBtn);
         bottom.add(removeStateBtn);
@@ -242,9 +239,7 @@ public class CreateAutomatonPanel extends JPanel {
     }
 
 
-    public String getAutomatonType(){
-        return tAutonatonCB.getSelectedItem().toString();
-    }
+
 
     public ArrayList<String> getStates() {
         ArrayList<String> states = new ArrayList<>();
@@ -322,7 +317,7 @@ public class CreateAutomatonPanel extends JPanel {
     }
 
     public AutomatonDTO createAutomaton(){
-        return new AutomatonDTO(getAutomatonType(), getStates(), getAlphabet(), getTransitions(), getInitialState(), getFinalStates());
+        return new AutomatonDTO(getStates(), getAlphabet(), getTransitions(), getInitialState(), getFinalStates());
     }
 
     public void loadAutomaton(AutomatonDTO automaton) {
@@ -330,7 +325,6 @@ public class CreateAutomatonPanel extends JPanel {
         if (automaton == null) return;
 
         clearTable();
-        tAutonatonCB.setSelectedItem(automaton.getType());
         loadAlphabetColumns(automaton.getAlphabet());
         loadStatesRows(automaton.getStates());
         markInitialState(automaton.getInitialState());

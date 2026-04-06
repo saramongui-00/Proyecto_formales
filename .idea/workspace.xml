@@ -4,16 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4d80e6fe-5cf1-4cba-8bb3-d7cf5dfd865a" name="Changes" comment="Simbolo de transición recursiva solucionado">
+    <list default="true" id="4d80e6fe-5cf1-4cba-8bb3-d7cf5dfd865a" name="Changes" comment="Proyecto terminado">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/controller/AutomatonController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/controller/AutomatonController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/dto/AutomatonDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/dto/AutomatonDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/model/Automaton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/model/Automaton.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/persistence/AutomatonPersistence.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/persistence/AutomatonPersistence.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/model/AutomatonType.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/CreateAutomatonPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/CreateAutomatonPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/EvaluateAutomatonPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/EvaluateAutomatonPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/MainWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/MainWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/ShowAutomatonPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/ShowAutomatonPanel.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,6 +56,7 @@
     &quot;Application.Main.executor&quot;: &quot;Run&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;controller&quot;,
@@ -82,7 +80,10 @@
       <option name="presentableId" value="Default" />
       <updated>1775250629035</updated>
       <workItem from="1775250632631" duration="668000" />
-      <workItem from="1775251320795" duration="9963000" />
+      <workItem from="1775251320795" duration="10138000" />
+      <workItem from="1775397437896" duration="1397000" />
+      <workItem from="1775481772030" duration="1950000" />
+      <workItem from="1775487234910" duration="948000" />
     </task>
     <task id="LOCAL-00001" summary="Simbolo de transición recursiva solucionado">
       <option name="closed" value="true" />
@@ -92,7 +93,15 @@
       <option name="project" value="LOCAL" />
       <updated>1775253054162</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Proyecto terminado">
+      <option name="closed" value="true" />
+      <created>1775262364404</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1775262364405</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -100,6 +109,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Simbolo de transición recursiva solucionado" />
-    <option name="LAST_COMMIT_MESSAGE" value="Simbolo de transición recursiva solucionado" />
+    <MESSAGE value="Proyecto terminado" />
+    <option name="LAST_COMMIT_MESSAGE" value="Proyecto terminado" />
   </component>
 </project>

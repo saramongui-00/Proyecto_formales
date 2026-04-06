@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AutomatonDTO {
-    private String type;
     private List<String> states;
     private List<String> alphabet;
     private List<TransitionDTO> transitions;
@@ -17,21 +16,12 @@ public class AutomatonDTO {
         finalStates = new ArrayList<>();
     }
 
-    public AutomatonDTO(String type, List<String> states, List<String> alphabet, List<TransitionDTO> transitions, String initialState, List<String> finalStates) {
-        this.type = type;
+    public AutomatonDTO(List<String> states, List<String> alphabet, List<TransitionDTO> transitions, String initialState, List<String> finalStates) {
         this.states = states;
         this.alphabet = alphabet;
         this.transitions = transitions;
         this.initialState = initialState;
         this.finalStates = finalStates;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public List<String> getStates() {
