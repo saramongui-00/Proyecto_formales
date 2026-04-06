@@ -12,11 +12,11 @@ public class Transition {
     private String toState;
     
     /*
-    Constructir de la transición.
+    Constructor de la transición.
     
-    @param fromstate Estado origen
-    @param symbol Símbolo de entrada
-    @param toState Estado destino
+    fromstate -> Estado origen
+    symbol    -> Símbolo de entrada
+    toState   -> Estado destino
     */
     public Transition(String fromState, String symbol, String toState) {
         this.fromState = fromState;

@@ -7,7 +7,7 @@ import java.util.Map;
 
 /*
 Representa un Autómata Finito Determinista (DFA).
-Garanrtiza que para cada estado y símbolo exista como máximo una  transición.
+Garantiza que para cada estado y símbolo exista como máximo una  transición.
 */
 public class Automaton {
     
@@ -28,7 +28,7 @@ public class Automaton {
     }
 
     /*
-    Constructor completo.
+    Constructor con parámetros.
     */
     public Automaton(List<String> states, List<String> alphabet,
                      List<Transition> transitions, String initialState, List<String> finalStates) {
@@ -119,6 +119,9 @@ public class Automaton {
         transitions.add(transition);
     }
 
+    /*
+    Agrega estados finales
+    */
     public void addFinalState(String state){
         if(!finalStates.contains(state)){
             finalStates.add(state);
@@ -152,6 +155,8 @@ public class Automaton {
         return finalStates.contains(state);
     }
 
+
+    /*Valida el DFA verificando que tenga estado inicial, final y transiciones únicas por pares*/
     public boolean validateDFA() {
         //Estado inicial
         if (initialState == null || !states.contains(initialState)) {
