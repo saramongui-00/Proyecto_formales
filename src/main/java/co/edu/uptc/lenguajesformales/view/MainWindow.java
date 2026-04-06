@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
 
-
+// Ventana principal de la aplicación que contiene todos los paneles
 public class MainWindow extends JFrame {
     private SideMenu sideMenu;
     private JSplitPane contentSplitPane;
@@ -24,7 +24,7 @@ public class MainWindow extends JFrame {
     private JFileChooser importFile;
     private AutomatonTraceDialog automatonTraceDialog;
 
-
+    // Constructor que inicializa la ventana con el listener para eventos
     public MainWindow(ActionListener listener){
         sideMenu = new SideMenu(listener);
         showAutomatonPanel = new ShowAutomatonPanel();
@@ -35,6 +35,7 @@ public class MainWindow extends JFrame {
         conf();
     }
 
+    // Configura la ventana principal con layout y componentes
     public void conf(){
         contentSplitPane = createSplitPane(createAutomatonPanel);
 
@@ -46,6 +47,7 @@ public class MainWindow extends JFrame {
         setVisible(true);
     }
 
+    // Crea un panel dividido horizontalmente entre el panel izquierdo y el de visualización
     private JSplitPane createSplitPane(JComponent leftPanel){
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, showAutomatonPanel);
         splitPane.setContinuousLayout(true);
@@ -55,31 +57,37 @@ public class MainWindow extends JFrame {
         return splitPane;
     }
 
+    // Cambia el panel izquierdo al panel de creación de autómatas
     public void changeCreateAutomatonPanel(){
         contentSplitPane.setLeftComponent(createAutomatonPanel);
         revalidate();
         repaint();
     }
 
+    // Cambia el panel izquierdo al panel de evaluación de entradas
     public void changeEvaluateAutomatonPanel(){
         contentSplitPane.setLeftComponent(evaluateAutomatonPanel);
         revalidate();
         repaint();
     }
 
+    // Muestra un mensaje de error en un diálogo
     public void showError(String message){
         JOptionPane.showMessageDialog(this,message,"Error",JOptionPane.ERROR_MESSAGE);
     }
 
+    // Muestra un mensaje informativo en un diálogo
     public void showMessage(String message){
         JOptionPane.showMessageDialog(this,message,"Información",JOptionPane.INFORMATION_MESSAGE);
     }
 
+    // Muestra un diálogo para preguntar si exportar, importar o cancelar
     public int saveAutomatonAlert(){
         String[]options = {"Exportar", "Importar", "Cancelar"};
         return JOptionPane.showOptionDialog(this, "¿Que acción desea realizar?", "Guardar cambios", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
     }
 
+    // Abre diálogo para exportar el autómata a un archivo JSON
     public String exportAutomaton(){
         exportFile.setDialogTitle("Guardar autómata como JSON");
 
@@ -101,6 +109,7 @@ public class MainWindow extends JFrame {
         return null;
     }
 
+    // Abre diálogo para importar un autómata desde un archivo JSON
     public String importAutomaton(){
         importFile.setDialogTitle("Select JSON file");
 
@@ -118,10 +127,12 @@ public class MainWindow extends JFrame {
         return null;
     }
 
+    // Retorna el autómata creado en el panel de creación
     public AutomatonDTO getAutomaton(){
         return createAutomatonPanel.createAutomaton();
     }
 
+    // Valida que el autómata tenga todos los elementos necesarios antes de generarlo
     public boolean generateAutomaton(){
         boolean val = false;
         if (createAutomatonPanel.getStates().isEmpty()) {
@@ -138,31 +149,37 @@ public class MainWindow extends JFrame {
         return val;
     }
 
-
+    // Retorna las entradas ingresadas en el panel de evaluación
     public ArrayList<String> getInputs(){
         return evaluateAutomatonPanel.getInputs();
     }
 
+    // Agrega un símbolo epsilon en el panel de evaluación
     public void addEpsilonInput(){
         evaluateAutomatonPanel.addEpsilonInput();
     }
 
+    // Muestra los resultados de evaluación en el panel correspondiente
     public void showEvaluationResults(Map<String, Boolean> results){
         evaluateAutomatonPanel.showEvaluationResults(results);
     }
 
+    // Dibuja el autómata en el panel de visualización
     public void drawAutomaton(){
         showAutomatonPanel.setAutomaton(createAutomatonPanel.createAutomaton());
     }
 
+    // Carga un autómata existente en el panel de creación
     public void loadAutomaton(AutomatonDTO automaton){
         createAutomatonPanel.loadAutomaton(automaton);
     }
 
+    // Retorna la entrada seleccionada para ver su trazabilidad
     public String getInputToTrace(){
         return evaluateAutomatonPanel.getInputToTrace();
     }
 
+    // Inicializa y muestra el diálogo de trazabilidad
     public void initTraceDialog(int rowCount, List<String> detailedTrace){
         automatonTraceDialog = new AutomatonTraceDialog(rowCount, detailedTrace);
     }

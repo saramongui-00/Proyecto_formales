@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Map;
 
+// Panel para evaluar cadenas de entrada en un autómata
 public class EvaluateAutomatonPanel extends JPanel {
 
     private static final String EPSILON_SYMBOL = "ε";
@@ -22,6 +23,7 @@ public class EvaluateAutomatonPanel extends JPanel {
     private OptionButton clearRowsBtn;
     private JPanel buttonsPanel;
 
+    // Constructor que inicializa el panel con el listener para eventos
     public EvaluateAutomatonPanel(ActionListener listener) {
         initComponents();
         conf();
@@ -32,6 +34,7 @@ public class EvaluateAutomatonPanel extends JPanel {
 
     }
 
+    // Inicializa los componentes del panel
     private void initComponents() {
         table = new JTable();
         scroll = new JScrollPane(table);
@@ -47,6 +50,7 @@ public class EvaluateAutomatonPanel extends JPanel {
         buttonsPanel.add(clearRowsBtn);
     }
 
+    // Configura el layout y bordes del panel principal
     public void conf(){
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createTitledBorder("Evaluar entradas"));
@@ -54,6 +58,7 @@ public class EvaluateAutomatonPanel extends JPanel {
         add(buttonsPanel, BorderLayout.SOUTH);
     }
 
+    // Configura la tabla con las columnas "Entrada" y "Resultado"
     private void configureTable() {
 
         String[] columns = {"Entrada", "Resultado"};
@@ -62,7 +67,7 @@ public class EvaluateAutomatonPanel extends JPanel {
 
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 0;
+                return column == 0; // Solo la columna de entrada es editable
             }
         };
 
@@ -73,18 +78,21 @@ public class EvaluateAutomatonPanel extends JPanel {
         model.setValueAt("", 0, 1);
     }
 
+    // Agrega los ActionListeners a los botones
     public void addActionListener(ActionListener listener){
         evaluateBtn.addActionListener(listener);
         traceBtn.addActionListener(listener);
         epsilonBtn.addActionListener(listener);
     }
 
+    // Asigna los comandos de acción a los botones
     public void setActionCommand(){
         evaluateBtn.setActionCommand("evaluateBtn");
         traceBtn.setActionCommand("traceBtn");
         epsilonBtn.setActionCommand("epsilonBtn");
     }
 
+    // Asigna colores de fondo a los botones
     public void setButtonsColors(){
         evaluateBtn.setBackground(Global.green);
         traceBtn.setBackground(Global.blue);
@@ -92,6 +100,7 @@ public class EvaluateAutomatonPanel extends JPanel {
         clearRowsBtn.setBackground(Global.red);
     }
 
+    // Retorna la entrada seleccionada para ver su trazabilidad
     public String getInputToTrace(){
         commitActiveEdit();
 
@@ -104,6 +113,7 @@ public class EvaluateAutomatonPanel extends JPanel {
         return normalizeInput(value == null ? "" : value.toString());
     }
 
+    // Retorna todas las entradas ingresadas en la tabla
     public ArrayList<String> getInputs() {
         commitActiveEdit();
 
@@ -122,6 +132,7 @@ public class EvaluateAutomatonPanel extends JPanel {
         return inputs;
     }
 
+    // Finaliza la edición activa de la tabla para guardar los cambios pendientes
     private void commitActiveEdit() {
         if (table.isEditing()) {
             TableCellEditor editor = table.getCellEditor();
@@ -131,6 +142,7 @@ public class EvaluateAutomatonPanel extends JPanel {
         }
     }
 
+    // Agrega el símbolo epsilon en la fila seleccionada o en la primera vacía
     public void addEpsilonInput() {
         int row = table.getSelectedRow();
 
@@ -148,6 +160,7 @@ public class EvaluateAutomatonPanel extends JPanel {
         table.requestFocusInWindow();
     }
 
+    // Busca la primera fila con entrada vacía
     private int findFirstEmptyInputRow() {
         for (int i = 0; i < model.getRowCount(); i++) {
             Object cell = model.getValueAt(i, 0);
@@ -158,6 +171,7 @@ public class EvaluateAutomatonPanel extends JPanel {
         return -1;
     }
 
+    // Normaliza la entrada convirtiendo epsilon a cadena vacía
     private String normalizeInput(String rawInput) {
         String input = rawInput == null ? "" : rawInput.trim();
         if (EPSILON_SYMBOL.equals(input) || "epsilon".equalsIgnoreCase(input)) {
@@ -166,6 +180,7 @@ public class EvaluateAutomatonPanel extends JPanel {
         return input;
     }
 
+    // Muestra los resultados de la evaluación en la columna "Resultado"
     public void showEvaluationResults(Map<String, Boolean> results) {
         for (int row = 0; row < model.getRowCount(); row++) {
             model.setValueAt("", row, 1);
@@ -185,6 +200,7 @@ public class EvaluateAutomatonPanel extends JPanel {
         }
     }
 
+    // Limpia todas las filas de la tabla
     private void clearAllRows() {
         commitActiveEdit();
         for (int row = 0; row < model.getRowCount(); row++) {
