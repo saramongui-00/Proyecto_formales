@@ -107,7 +107,23 @@ public class Automaton {
     Agrega una transición validando que no rompa el determinismo
     */
     public void addTransition(Transition transition){
-            for (Transition t : transitions) {
+        //Validar estado origen
+        if(!states.contains(transition.getFromState())){
+            throw new IllegalArgumentException("El estado origen no exite: " + transition.getFromState());
+        }
+        
+        //Validar estado destino
+         if(!states.contains(transition.getToState())){
+            throw new IllegalArgumentException("El estado destino no exite: " + transition.getToState());
+        }
+
+        //Validar símbolo
+        if(!alphabet.contains(transition.getSymbol())){
+            throw new IllegalArgumentException("El spimbolo no existe en el alfabeto: " + transition.getSymbol());
+        }
+
+        //Validar determinismo
+        for (Transition t : transitions) {
                 if (t.getFromState().equals(transition.getFromState()) &&
                     t.getSymbol().equals(transition.getSymbol())) {
                     throw new IllegalStateException(
