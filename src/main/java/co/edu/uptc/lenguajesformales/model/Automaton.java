@@ -91,7 +91,7 @@ public class Automaton {
     }
 
     /*
-    Agrega un símbolo al alfabeto (no permite epsilon).
+    Agrega un símbolo al alfabeto.
     */
     public void addSymbol(String symbol){
         if(symbol.equals("")){

@@ -6,7 +6,6 @@ import co.edu.uptc.lenguajesformales.dto.TransitionDTO;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;

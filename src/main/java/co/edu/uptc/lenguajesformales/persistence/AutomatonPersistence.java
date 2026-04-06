@@ -15,10 +15,23 @@ public class AutomatonPersistence {
 
     private final Gson gson;
 
+    /**
+     * Inicializa el componente de persistencia con una instancia de Gson
+     * configurada para generar JSON legible (pretty printing).
+     */
     public AutomatonPersistence() {
         this.gson = new GsonBuilder().setPrettyPrinting().create();
     }
 
+    /**
+     * Exporta un automata a un archivo JSON.
+     * Valida los parametros de entrada y crea los directorios faltantes
+     * antes de escribir el contenido en disco.
+     *
+     * @param automaton automata a serializar
+     * @param filePath ruta de destino del archivo JSON
+     * @throws IOException si ocurre un error durante la escritura
+     */
     public void exportToJson(Automaton automaton, String filePath) throws IOException {
         if (automaton == null) {
             throw new IllegalArgumentException("El automata no puede ser nulo.");
@@ -38,6 +51,14 @@ public class AutomatonPersistence {
         }
     }
 
+    /**
+     * Importa un automata desde un archivo JSON.
+     * Tras deserializarlo, normaliza sus colecciones para evitar valores nulos.
+     *
+     * @param filePath ruta del archivo JSON de entrada
+     * @return automata cargado y normalizado
+     * @throws IOException si el archivo no existe o hay errores de lectura
+     */
     public Automaton importFromJson(String filePath) throws IOException {
         if (filePath == null || filePath.isBlank()) {
             throw new IllegalArgumentException("File path cannot be empty");
@@ -54,6 +75,14 @@ public class AutomatonPersistence {
         }
     }
 
+    /**
+     * Garantiza que el automata deserializado tenga todas sus listas inicializadas.
+     * Si alguna coleccion llega como null desde el JSON, se reemplaza por una
+     * lista vacia para evitar errores posteriores.
+     *
+     * @param automaton automata deserializado
+     * @return automata con estructura interna consistente
+     */
     private Automaton normalize(Automaton automaton) {
         if (automaton == null) {
             throw new IllegalArgumentException("El archivo JSON no contiene un automata valido.");
