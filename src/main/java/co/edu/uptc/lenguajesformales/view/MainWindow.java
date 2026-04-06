@@ -51,9 +51,9 @@ public class MainWindow extends JFrame {
     private JSplitPane createSplitPane(JComponent leftPanel){
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, showAutomatonPanel);
         splitPane.setContinuousLayout(true);
-        splitPane.setResizeWeight(0.55);
+        splitPane.setResizeWeight(0.20);
         splitPane.setOneTouchExpandable(true);
-        splitPane.setDividerLocation(0.55);
+        splitPane.setDividerLocation(0.20);
         return splitPane;
     }
 

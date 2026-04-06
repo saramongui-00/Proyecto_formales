@@ -94,11 +94,12 @@ public class Automaton {
     Agrega un símbolo al alfabeto.
     */
     public void addSymbol(String symbol){
-        if(symbol.equals("")){
-            throw new IllegalArgumentException("DFA no permite transiciones epsilon");
+        String normalizedSymbol = symbol == null ? "" : symbol.trim();
+        if(normalizedSymbol.isEmpty() || isEpsilonSymbol(normalizedSymbol)){
+            throw new IllegalArgumentException("DFA no permite simbolos epsilon ni vacios");
         }
-        if(!alphabet.contains(symbol)){
-            alphabet.add(symbol);
+        if(!alphabet.contains(normalizedSymbol)){
+            alphabet.add(normalizedSymbol);
         }
     }
     
@@ -156,6 +157,12 @@ public class Automaton {
         if (initialState == null || !states.contains(initialState)) {
             return false;
         }
+        //Alfabeto válido para DFA 
+        for (String symbol : alphabet) {
+            if (symbol == null || symbol.trim().isEmpty() || isEpsilonSymbol(symbol.trim())) {
+                return false;
+            }
+        }
         //Estados finales
         for (String f : finalStates) {
             if (!states.contains(f)) {
@@ -187,6 +194,10 @@ public class Automaton {
             }
         }
         return true;
+    }
+
+    private boolean isEpsilonSymbol(String symbol) {
+        return "ε".equals(symbol) || "epsilon".equalsIgnoreCase(symbol);
     }
 
     /*

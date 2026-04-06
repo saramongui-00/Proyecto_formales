@@ -181,10 +181,10 @@ public class CreateAutomatonPanel extends JPanel {
         String symbol = JOptionPane.showInputDialog(this,"Ingrese símbolo:");
         if(symbol==null) return;
 
-        if(symbol.trim().isEmpty()){
-            symbol = "ε";
-        } else {
-            symbol = symbol.trim();
+        symbol = symbol.trim();
+        if (isInvalidDfaSymbol(symbol)) {
+            showError("En un DFA no se permite epsilon ni símbolos vacíos.");
+            return;
         }
 
         for(int i=3;i<table.getColumnModel().getColumnCount();i++){
@@ -200,8 +200,13 @@ public class CreateAutomatonPanel extends JPanel {
     // Renombra una columna de símbolo
     private void renameColumn(int col) {
         String newName = JOptionPane.showInputDialog(this,"Editar símbolo:");
-        if(newName==null || newName.trim().isEmpty()) return;
+        if(newName==null) return;
         newName=newName.trim();
+
+        if (isInvalidDfaSymbol(newName)) {
+            showError("En un DFA no se permite epsilon ni símbolos vacíos.");
+            return;
+        }
 
         for(int i=3;i<table.getColumnModel().getColumnCount();i++){
             if(i==col) continue;
@@ -213,6 +218,11 @@ public class CreateAutomatonPanel extends JPanel {
 
         table.getColumnModel().getColumn(col).setHeaderValue(newName);
         table.getTableHeader().repaint();
+    }
+
+    // Valida que el símbolo sea válido para un DFA (sin epsilon ni vacío)
+    private boolean isInvalidDfaSymbol(String symbol) {
+        return symbol.isEmpty() || "ε".equals(symbol) || "epsilon".equalsIgnoreCase(symbol);
     }
 
     // Elimina la columna de símbolo seleccionada
