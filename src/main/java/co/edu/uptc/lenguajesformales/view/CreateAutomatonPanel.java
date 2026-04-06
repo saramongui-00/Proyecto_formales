@@ -4,21 +4,21 @@ import co.edu.uptc.lenguajesformales.dto.AutomatonDTO;
 import co.edu.uptc.lenguajesformales.dto.TransitionDTO;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 import java.util.ArrayList;
+import java.util.Vector;
 
+// Panel para la creación de autómatas con una tabla interactiva
 public class CreateAutomatonPanel extends JPanel {
 
     private JTable table;
     private DefaultTableModel model;
-    private JComboBox<String> tAutonatonCB;
 
     private OptionButton addStateBtn;
     private OptionButton removeStateBtn;
@@ -29,6 +29,7 @@ public class CreateAutomatonPanel extends JPanel {
     private JPanel top;
     private JPanel bottom;
 
+    // Constructor que inicializa el panel con el listener para eventos
     public CreateAutomatonPanel(ActionListener listener) {
         initComponents();
         conf();
@@ -38,9 +39,9 @@ public class CreateAutomatonPanel extends JPanel {
         configureEvents(listener);
     }
 
+    // Inicializa los componentes del panel
     private void initComponents() {
         top = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        tAutonatonCB = new JComboBox<>(new String[]{"AFN","AFD"});
         table = new JTable();
         addStateBtn = new OptionButton("Crear Estado");
         removeStateBtn = new OptionButton("Eliminar estado");
@@ -50,6 +51,7 @@ public class CreateAutomatonPanel extends JPanel {
         bottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     }
 
+    // Configura el layout y bordes del panel principal
     public void conf(){
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createTitledBorder("Crear Autómata"));
@@ -58,10 +60,8 @@ public class CreateAutomatonPanel extends JPanel {
         add(bottom, BorderLayout.SOUTH);
     }
 
+    // Agrega los botones al panel inferior con espaciadores
     public void initPanels(){
-        top.add(new JLabel("Tipo de autómata"));
-        top.add(tAutonatonCB);
-
         bottom.add(addStateBtn);
         bottom.add(removeStateBtn);
         bottom.add(Box.createRigidArea(new Dimension(30,30)));
@@ -71,6 +71,7 @@ public class CreateAutomatonPanel extends JPanel {
         bottom.add(generateAutomatonBtn);
     }
 
+    // Asigna colores de fondo a los botones
     public void buttonsConf(){
         generateAutomatonBtn.setBackground(Global.green);
         addStateBtn.setBackground(Global.blue);
@@ -79,6 +80,7 @@ public class CreateAutomatonPanel extends JPanel {
         removeSymbolBtn.setBackground(Global.red);
     }
 
+    // Configura la tabla con sus columnas y listeners
     private void configureTable() {
 
         model = new DefaultTableModel(null,new String[]{"Estado inicial (->)","Estados finales (*)","Estados (Q)"}) {
@@ -92,6 +94,7 @@ public class CreateAutomatonPanel extends JPanel {
         table.setModel(model);
         table.setRowHeight(25);
 
+        // Permite renombrar columnas de símbolos con doble clic
         table.getTableHeader().addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if(e.getClickCount()==2){
@@ -102,19 +105,21 @@ public class CreateAutomatonPanel extends JPanel {
             }
         });
 
+        // Listener para validar cambios en la tabla
         model.addTableModelListener(e -> {
             if(e.getType()!= TableModelEvent.UPDATE) return;
             int row = e.getFirstRow();
             int col = e.getColumn();
             if(col==0){
-               alwaysInitState(row);
+                alwaysInitState(row);
             }
             if(col==2){
-               editRow(row);
+                editRow(row);
             }
         });
     }
 
+    // Valida que solo exista un estado inicial en la tabla
     public void alwaysInitState(int row){
         if(Boolean.TRUE.equals(model.getValueAt(row,0))){
             for(int i=0;i<model.getRowCount();i++)
@@ -127,6 +132,7 @@ public class CreateAutomatonPanel extends JPanel {
         }
     }
 
+    // Valida que no haya estados duplicados al editar una celda
     public void editRow(int row){
         String edited = model.getValueAt(row,2).toString().trim();
 
@@ -140,6 +146,7 @@ public class CreateAutomatonPanel extends JPanel {
         }
     }
 
+    // Configura los eventos de los botones
     private void configureEvents(ActionListener listener) {
         generateAutomatonBtn.setActionCommand("generateAutomatonBtn");
         generateAutomatonBtn.addActionListener(listener);
@@ -149,6 +156,7 @@ public class CreateAutomatonPanel extends JPanel {
         removeSymbolBtn.addActionListener(e -> removeSymbol());
     }
 
+    // Agrega una nueva fila (estado) a la tabla
     private void addState() {
         Object[] row = new Object[model.getColumnCount()];
         row[0] = model.getRowCount()==0;
@@ -157,6 +165,7 @@ public class CreateAutomatonPanel extends JPanel {
         model.addRow(row);
     }
 
+    // Elimina el estado seleccionado de la tabla
     private void removeState() {
         int row = table.getSelectedRow();
         if(row==-1) return;
@@ -167,11 +176,16 @@ public class CreateAutomatonPanel extends JPanel {
         }
     }
 
+    // Agrega un nuevo símbolo como columna en la tabla
     private void addSymbol() {
         String symbol = JOptionPane.showInputDialog(this,"Ingrese símbolo:");
         if(symbol==null) return;
-        symbol = symbol.trim();
-        if(symbol.isEmpty()){ showError("Símbolo vacío"); return; }
+
+        if(symbol.trim().isEmpty()){
+            symbol = "ε";
+        } else {
+            symbol = symbol.trim();
+        }
 
         for(int i=3;i<table.getColumnModel().getColumnCount();i++){
             String existing = table.getColumnModel().getColumn(i).getHeaderValue().toString();
@@ -183,6 +197,7 @@ public class CreateAutomatonPanel extends JPanel {
             model.setValueAt(null,r,model.getColumnCount()-1);
     }
 
+    // Renombra una columna de símbolo
     private void renameColumn(int col) {
         String newName = JOptionPane.showInputDialog(this,"Editar símbolo:");
         if(newName==null || newName.trim().isEmpty()) return;
@@ -200,28 +215,45 @@ public class CreateAutomatonPanel extends JPanel {
         table.getTableHeader().repaint();
     }
 
+    // Elimina la columna de símbolo seleccionada
     private void removeSymbol() {
-        int col = table.getSelectedColumn();
-        if(col < 3){
+        int viewCol = table.getSelectedColumn();
+        if(viewCol < 3){
             showError("Seleccione una columna de símbolo.");
             return;
         }
 
-        TableColumn column = table.getColumnModel().getColumn(col);
-        table.removeColumn(column);
-        model.setColumnCount(model.getColumnCount()-1);
+        int modelCol = table.convertColumnIndexToModel(viewCol);
+
+        Vector<String> columnNames = new Vector<>();
+        for (int col = 0; col < model.getColumnCount(); col++) {
+            if (col != modelCol) {
+                columnNames.add(model.getColumnName(col));
+            }
+        }
+
+        Vector<Vector<Object>> rows = new Vector<>();
+        for (int row = 0; row < model.getRowCount(); row++) {
+            Vector<Object> newRow = new Vector<>();
+            for (int col = 0; col < model.getColumnCount(); col++) {
+                if (col != modelCol) {
+                    newRow.add(model.getValueAt(row, col));
+                }
+            }
+            rows.add(newRow);
+        }
+
+        model.setDataVector(rows, columnNames);
+        table.clearSelection();
+        table.setRowHeight(25);
     }
 
+    // Muestra un mensaje de error en un diálogo
     public void showError(String message){
         JOptionPane.showMessageDialog(this,message,"Error",JOptionPane.ERROR_MESSAGE);
     }
 
-    // GETTERS
-
-    public String getAutomatonType(){
-        return tAutonatonCB.getSelectedItem().toString();
-    }
-
+    // Retorna la lista de estados del autómata
     public ArrayList<String> getStates() {
         ArrayList<String> states = new ArrayList<>();
         for(int i=0;i<model.getRowCount();i++){
@@ -233,6 +265,7 @@ public class CreateAutomatonPanel extends JPanel {
         return states;
     }
 
+    // Retorna el estado inicial del autómata
     public String getInitialState() {
         for(int i=0;i<model.getRowCount();i++)
             if(Boolean.TRUE.equals(model.getValueAt(i,0)))
@@ -240,6 +273,7 @@ public class CreateAutomatonPanel extends JPanel {
         return null;
     }
 
+    // Retorna la lista de estados finales del autómata
     public ArrayList<String> getFinalStates() {
         ArrayList<String> finals = new ArrayList<>();
         for(int i=0;i<model.getRowCount();i++)
@@ -248,6 +282,7 @@ public class CreateAutomatonPanel extends JPanel {
         return finals;
     }
 
+    // Retorna el alfabeto (símbolos) del autómata
     public ArrayList<String> getAlphabet() {
         ArrayList<String> alphabet = new ArrayList<>();
         for (int col = 3; col < table.getColumnModel().getColumnCount(); col++) {
@@ -257,6 +292,7 @@ public class CreateAutomatonPanel extends JPanel {
         return alphabet;
     }
 
+    // Retorna la lista de transiciones del autómata
     public ArrayList<TransitionDTO> getTransitions() {
         ArrayList<TransitionDTO> transitions = new ArrayList<>();
 
@@ -297,7 +333,116 @@ public class CreateAutomatonPanel extends JPanel {
         return transitions;
     }
 
+    // Crea y retorna un objeto AutomatonDTO con los datos del panel
     public AutomatonDTO createAutomaton(){
-        return new AutomatonDTO(getAutomatonType(), getStates(), getAlphabet(), getTransitions(), getInitialState(), getFinalStates());
+        return new AutomatonDTO(getStates(), getAlphabet(), getTransitions(), getInitialState(), getFinalStates());
     }
+
+    // Carga un autómata existente en el panel
+    public void loadAutomaton(AutomatonDTO automaton) {
+
+        if (automaton == null) return;
+
+        clearTable();
+        loadAlphabetColumns(automaton.getAlphabet());
+        loadStatesRows(automaton.getStates());
+        markInitialState(automaton.getInitialState());
+        markFinalStates(automaton.getFinalStates());
+        loadTransitions(automaton.getTransitions());
+    }
+
+    // Limpia toda la tabla
+    private void clearTable() {
+        model.setRowCount(0);
+        model.setColumnCount(3);
+    }
+
+    // Carga las columnas del alfabeto en la tabla
+    private void loadAlphabetColumns(List<String> alphabet) {
+        for (String symbol : alphabet) {
+            model.addColumn(symbol);
+        }
+    }
+
+    // Carga las filas de estados en la tabla
+    private void loadStatesRows(List<String> states) {
+
+        for (String state : states) {
+            Object[] row = new Object[model.getColumnCount()];
+            row[0] = false;
+            row[1] = false;
+            row[2] = state;
+
+            model.addRow(row);
+        }
+    }
+
+    // Marca el estado inicial en la tabla
+    private void markInitialState(String initialState) {
+        if (initialState == null) return;
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String state = model.getValueAt(i, 2).toString();
+            if (state.equals(initialState)) {
+                model.setValueAt(true, i, 0);
+                return;
+            }
+        }
+    }
+
+    // Marca los estados finales en la tabla
+    private void markFinalStates(List<String> finals) {
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String state = model.getValueAt(i, 2).toString();
+            if (finals.contains(state)) {
+                model.setValueAt(true, i, 1);
+            }
+        }
+    }
+
+    // Carga las transiciones en la tabla
+    private void loadTransitions(List<TransitionDTO> transitions) {
+
+        for (TransitionDTO t : transitions) {
+
+            int row = findRowByState(t.getFromState());
+            int col = findColumnBySymbol(t.getSymbol());
+
+            if (row == -1 || col == -1) continue;
+
+            Object currentCell = model.getValueAt(row, col);
+
+            if (currentCell == null || currentCell.toString().isEmpty()) {
+                model.setValueAt(t.getToState(), row, col);
+            } else {
+                String updated = currentCell.toString() + "," + t.getToState();
+                model.setValueAt(updated, row, col);
+            }
+        }
+    }
+
+    // Busca la fila correspondiente a un estado
+    private int findRowByState(String state) {
+        for (int i = 0; i < model.getRowCount(); i++) {
+            if (model.getValueAt(i, 2).toString().equals(state))
+                return i;
+        }
+        return -1;
+    }
+
+    // Busca la columna correspondiente a un símbolo
+    private int findColumnBySymbol(String symbol) {
+        for (int col = 3; col < model.getColumnCount(); col++) {
+            String header = table.getColumnModel()
+                    .getColumn(col)
+                    .getHeaderValue()
+                    .toString();
+
+            if (header.equals(symbol))
+                return col;
+        }
+        return -1;
+    }
+
 }

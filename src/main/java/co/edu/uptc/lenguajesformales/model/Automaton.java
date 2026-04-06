@@ -1,17 +1,25 @@
 package co.edu.uptc.lenguajesformales.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+/*
+Representa un Autómata Finito Determinista (DFA).
+Garanrtiza que para cada estado y símbolo exista como máximo una  transición.
+*/
 public class Automaton {
     
-    private AutomatonType type;
     private List<String> states;
     private List<String> alphabet;
     private List<Transition> transitions;
     private String initialState;
     private List<String> finalStates;
     
+    /*
+    Constructor vacío.
+    */
     public Automaton() {
         states =new ArrayList<>();
         alphabet = new ArrayList<>();
@@ -19,13 +27,18 @@ public class Automaton {
         finalStates = new ArrayList<>();
     }
 
-    public AutomatonType getType() {
-        return type;
+    /*
+    Constructor completo.
+    */
+    public Automaton(List<String> states, List<String> alphabet,
+                     List<Transition> transitions, String initialState, List<String> finalStates) {
+        this.states = states;
+        this.alphabet = alphabet;
+        this.transitions = transitions;
+        this.initialState = initialState;
+        this.finalStates = finalStates;
     }
 
-    public void setType(AutomatonType type) {
-        this.type = type;
-    }
 
     public List<String> getStates() {
         return states;
@@ -67,19 +80,41 @@ public class Automaton {
         this.finalStates = finalStates;
     }
 
+    /*
+    Métodos básicos
+    */
+
     public void addState(String state){
         if(!states.contains(state)){
             states.add(state);
         }
     }
 
+    /*
+    Agrega un símbolo al alfabeto.
+    */
     public void addSymbol(String symbol){
+        if(symbol.equals("")){
+            throw new IllegalArgumentException("DFA no permite transiciones epsilon");
+        }
         if(!alphabet.contains(symbol)){
             alphabet.add(symbol);
         }
     }
     
+    /*
+    Agrega una transición validando que no rompa el determinismo
+    */
     public void addTransition(Transition transition){
+            for (Transition t : transitions) {
+                if (t.getFromState().equals(transition.getFromState()) &&
+                    t.getSymbol().equals(transition.getSymbol())) {
+                    throw new IllegalStateException(
+                        "Transición no determinista detectada en estado " +
+                        transition.getFromState() + " con símbolo " +
+                        transition.getSymbol());
+                }
+            }
         transitions.add(transition);
     }
 
@@ -89,35 +124,155 @@ public class Automaton {
         }
     }
 
-    public List<Transition> getTransitions(String state, String symbol){
-        List<Transition> result= new ArrayList<>();
-        for(Transition t: transitions){
+    /*
+    Obtiene la transición única para un estado y símbolo.
+    */
+    public Transition getTransition(String state, String symbol){
+        for(Transition t : transitions){
             if(t.getFromState().equals(state) && t.getSymbol().equals(symbol)){
-                result.add(t);
+                return t;
             }
         }
-        return result;
+        return null;
     }
 
-    /*Check if a state exists */
+    /*Verifica si el estado existe */
     public boolean containsState(String state){
         return states.contains(state);
     }
 
-    /*Check if a symbol exists */
+    /*Verifica que el simbolo exista */
     public boolean containsSymbol(String symbol){
         return alphabet.contains(symbol);
     }
 
-    /*Check is a state is final */
+    /*Verifica que exista al menos un estado de aceptación */
     public boolean isFinalState(String state){
         return finalStates.contains(state);
     }
 
-    /*Prints the automaton for testing*/
-    public void print() {
-        System.out.println("\nAUTOMATON");
-        System.out.println("Type: " + type);
+    public boolean validateDFA() {
+        //Estado inicial
+        if (initialState == null || !states.contains(initialState)) {
+            return false;
+        }
+        //Estados finales
+        for (String f : finalStates) {
+            if (!states.contains(f)) {
+                return false;
+            }
+        }
+        //Transiciones válidas
+        for (Transition t : transitions) {
+            if (!states.contains(t.getFromState())) 
+                return false;
+            if (!states.contains(t.getToState())) 
+                return false;
+            if (!alphabet.contains(t.getSymbol())) 
+                return false;
+        }
+
+        //Determinismo
+        for (String state : states) {
+            for (String symbol : alphabet) {
+                int count = 0;
+                for (Transition t : transitions) {
+                    if (t.getFromState().equals(state) &&
+                        t.getSymbol().equals(symbol)) {
+                        count++;
+                    }
+                }
+                if (count > 1) 
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    /*
+    Evalúa una cadena en el DFA 
+    */
+    public boolean evaluateAutomaton(String input) {
+        if (!validateDFA()) throw new IllegalStateException("DFA inválido");
+        return evaluateDFA(input);
+
+    }
+
+    /*
+    Evalúa múltiples cadenas (máximo 10).
+    */
+    public Map<String, Boolean> evaluateBatchAutomaton(List<String> inputs) {
+        if (inputs == null || inputs.isEmpty()) throw new IllegalArgumentException("Debe ingresar al menos una cadena");
+        if (inputs.size() > 10) throw new IllegalArgumentException("Se permiten máximo 10 cadenas");
+
+        Map<String, Boolean> results = new HashMap<>();
+        for (String input : inputs) results.put(input, evaluateAutomaton(input));
+        return results;
+    }
+
+    /*
+    Lógica principal de evaluación del DFA
+    */
+    public boolean evaluateDFA(String input){
+
+        if (input == null) {
+            throw new IllegalArgumentException("La cadena no puede ser null");
+        }
+
+        String currentState = initialState;
+
+            for (char c: input.toCharArray()){
+                String symbol = String.valueOf(c);
+                if (!alphabet.contains(symbol)) {
+                    return false;
+                }
+
+                Transition t = getTransition(currentState, symbol);
+                if(t == null){
+                    return false;
+                }
+
+                currentState = t.getToState();
+            }
+
+            return isFinalState(currentState);
+        }
+
+    /*
+    Devuelve el recorrido paso a paso del DFA 
+    */
+    public List<String> evaluateWithTrace(String input) {
+
+        List<String> trace = new ArrayList<>();
+        String currentState = initialState;
+
+        for (char c : input.toCharArray()) {
+            String symbol = String.valueOf(c);
+
+            if (!alphabet.contains(symbol)) {
+                trace.add("(" + currentState + ", " + symbol + ") -> símbolo inválido");
+                return trace;
+            }
+
+            Transition t = getTransition(currentState, symbol);
+
+            if (t == null) {
+                trace.add("(" + currentState + ", " + symbol + ") -> error");
+                return trace;
+            }
+
+            trace.add("(" + currentState + ", " + symbol + ") -> " + t.getToState());
+            currentState = t.getToState();
+        }
+
+        return trace;
+    }
+
+    /*
+    Imprime el autómata.
+    */
+   public void print() {
+        System.out.println("\nAUTOMATON DFA");
         System.out.println("States: " + states);
         System.out.println("Alphabet: " + alphabet);
         System.out.println("Initial State: " + initialState);

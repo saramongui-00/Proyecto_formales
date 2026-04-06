@@ -1,14 +1,23 @@
 package co.edu.uptc.lenguajesformales.model;
 
+
+/*
+Representa una transición de un autómata finito determinista (DFA).
+Define el estado de origen, el símbolo leído y el estado destino
+*/
 public class Transition {
     
     private String fromState;
     private String symbol;
     private String toState;
-
-    public Transition() {
-    }
     
+    /*
+    Constructir de la transición.
+    
+    @param fromstate Estado origen
+    @param symbol Símbolo de entrada
+    @param toState Estado destino
+    */
     public Transition(String fromState, String symbol, String toState) {
         this.fromState = fromState;
         this.symbol = symbol;
@@ -19,26 +28,17 @@ public class Transition {
         return fromState;
     }
 
-    public void setFromState(String fromState) {
-        this.fromState = fromState;
-    }
-
     public String getSymbol() {
         return symbol;
-    }
-
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
     }
 
     public String getToState() {
         return toState;
     }
 
-    public void setToState(String toState) {
-        this.toState = toState;
-    }
-
+    /*
+    Representación en texto de la transición.
+    */
     @Override
     public String toString() {
         return "Transition [fromState=" + fromState + ", symbol=" + symbol + ", toState=" + toState + "]";

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="4d80e6fe-5cf1-4cba-8bb3-d7cf5dfd865a" name="Changes" comment="Correccion NFA">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/AutomatonTraceDialog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/AutomatonTraceDialog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/CreateAutomatonPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/CreateAutomatonPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/EvaluateAutomatonPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/EvaluateAutomatonPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/FinalStateRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/FinalStateRenderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/Global.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/Global.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/MainWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/MainWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/MenuButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/edu/uptc/lenguajesformales/view/MenuButton.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;saramongui-00&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/saramongui-00/Proyecto_formales.git&quot;,
+    &quot;accountId&quot;: &quot;ccd9790c-ca04-48a9-b97b-02ab9d309e4b&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="3BrcSDxIrFyPesgPXxHij522Wxu" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;controller&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.30387.90" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4d80e6fe-5cf1-4cba-8bb3-d7cf5dfd865a" name="Changes" comment="" />
+      <created>1775250629035</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1775250629035</updated>
+      <workItem from="1775250632631" duration="668000" />
+      <workItem from="1775251320795" duration="10138000" />
+      <workItem from="1775397437896" duration="1397000" />
+      <workItem from="1775481772030" duration="1950000" />
+      <workItem from="1775487234910" duration="3752000" />
+    </task>
+    <task id="LOCAL-00001" summary="Simbolo de transición recursiva solucionado">
+      <option name="closed" value="true" />
+      <created>1775253054162</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1775253054162</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Proyecto terminado">
+      <option name="closed" value="true" />
+      <created>1775262364404</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1775262364405</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Correccion NFA">
+      <option name="closed" value="true" />
+      <created>1775488203645</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1775488203646</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Simbolo de transición recursiva solucionado" />
+    <MESSAGE value="Proyecto terminado" />
+    <MESSAGE value="Correccion NFA" />
+    <option name="LAST_COMMIT_MESSAGE" value="Correccion NFA" />
+  </component>
+</project>
