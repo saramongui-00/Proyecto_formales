@@ -1,8 +1,6 @@
 package co.edu.uptc.lenguajesformales.app;
 
 import co.edu.uptc.lenguajesformales.controller.AutomatonController;
-import co.edu.uptc.lenguajesformales.model.Automaton;
-import co.edu.uptc.lenguajesformales.view.MainWindow;
 
 public class Main {
     

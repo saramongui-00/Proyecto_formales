@@ -2,12 +2,13 @@ package co.edu.uptc.lenguajesformales.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-
+/*
+Representa un Autómata Finito Determinista (DFA).
+Garanrtiza que para cada estado y símbolo exista como máximo una  transición.
+*/
 public class Automaton {
     
     private List<String> states;
@@ -16,6 +17,9 @@ public class Automaton {
     private String initialState;
     private List<String> finalStates;
     
+    /*
+    Constructor vacío.
+    */
     public Automaton() {
         states =new ArrayList<>();
         alphabet = new ArrayList<>();
@@ -23,6 +27,9 @@ public class Automaton {
         finalStates = new ArrayList<>();
     }
 
+    /*
+    Constructor completo.
+    */
     public Automaton(List<String> states, List<String> alphabet,
                      List<Transition> transitions, String initialState, List<String> finalStates) {
         this.states = states;
@@ -73,18 +80,31 @@ public class Automaton {
         this.finalStates = finalStates;
     }
 
+    /*
+    Métodos básicos
+    */
+
     public void addState(String state){
         if(!states.contains(state)){
             states.add(state);
         }
     }
 
+    /*
+    Agrega un símbolo al alfabeto (no permite epsilon).
+    */
     public void addSymbol(String symbol){
+        if(symbol.equals("")){
+            throw new IllegalArgumentException("DFA no permite transiciones epsilon");
+        }
         if(!alphabet.contains(symbol)){
             alphabet.add(symbol);
         }
     }
     
+    /*
+    Agrega una transición validando que no rompa el determinismo
+    */
     public void addTransition(Transition transition){
             for (Transition t : transitions) {
                 if (t.getFromState().equals(transition.getFromState()) &&
@@ -104,14 +124,16 @@ public class Automaton {
         }
     }
 
-    public List<Transition> getTransitions(String state, String symbol){
-        List<Transition> result= new ArrayList<>();
-        for(Transition t: transitions){
+    /*
+    Obtiene la transición única para un estado y símbolo.
+    */
+    public Transition getTransition(String state, String symbol){
+        for(Transition t : transitions){
             if(t.getFromState().equals(state) && t.getSymbol().equals(symbol)){
-                result.add(t);
+                return t;
             }
         }
-        return result;
+        return null;
     }
 
     /*Verifica si el estado existe */
@@ -167,12 +189,18 @@ public class Automaton {
         return true;
     }
 
+    /*
+    Evalúa una cadena en el DFA 
+    */
     public boolean evaluateAutomaton(String input) {
         if (!validateDFA()) throw new IllegalStateException("DFA inválido");
-        return evaluateAFD(input);
+        return evaluateDFA(input);
 
     }
 
+    /*
+    Evalúa múltiples cadenas (máximo 10).
+    */
     public Map<String, Boolean> evaluateBatchAutomaton(List<String> inputs) {
         if (inputs == null || inputs.isEmpty()) throw new IllegalArgumentException("Debe ingresar al menos una cadena");
         if (inputs.size() > 10) throw new IllegalArgumentException("Se permiten máximo 10 cadenas");
@@ -182,74 +210,69 @@ public class Automaton {
         return results;
     }
 
-    public boolean evaluateAFD(String input){
+    /*
+    Lógica principal de evaluación del DFA
+    */
+    public boolean evaluateDFA(String input){
+
         if (input == null) {
             throw new IllegalArgumentException("La cadena no puede ser null");
         }
-        if (!validateDFA()) {
-            throw new IllegalStateException("AFD inválido");
-        }
-
 
         String currentState = initialState;
-        for (char c: input.toCharArray()){
-            String symbol = String.valueOf(c);
-            //Validar símbolo
-            if (!alphabet.contains(symbol)) {
-                return false;
-            }
-            List<Transition> possibleTransitions = getTransitions(currentState, symbol);
 
-           /*Si no existe transición para ese símbolo la cadena se rechaza*/ 
-            if(possibleTransitions.isEmpty()){
-                return false;
-            }
-            currentState = possibleTransitions.get(0).getToState();
-        }
-        return isFinalState(currentState);
-    }
+            for (char c: input.toCharArray()){
+                String symbol = String.valueOf(c);
+                if (!alphabet.contains(symbol)) {
+                    return false;
+                }
 
-    public List<String> evaluateAFDWithDetailedTrace(String input) {
-        if (input == null) {
-            throw new IllegalArgumentException("La cadena no puede ser null");
+                Transition t = getTransition(currentState, symbol);
+                if(t == null){
+                    return false;
+                }
+
+                currentState = t.getToState();
+            }
+
+            return isFinalState(currentState);
         }
-        if (!validateDFA()) {
-            throw new IllegalStateException("AFD inválido");
-        }
+
+    /*
+    Devuelve el recorrido paso a paso del DFA 
+    */
+    public List<String> evaluateWithTrace(String input) {
 
         List<String> trace = new ArrayList<>();
-
         String currentState = initialState;
 
         for (char c : input.toCharArray()) {
             String symbol = String.valueOf(c);
 
             if (!alphabet.contains(symbol)) {
-                trace.add("(" + currentState + ", " + symbol + ") -> SIMBOLO INVÁLIDO");
+                trace.add("(" + currentState + ", " + symbol + ") -> símbolo inválido");
                 return trace;
             }
 
-            List<Transition> possibleTransitions = getTransitions(currentState, symbol);
+            Transition t = getTransition(currentState, symbol);
 
-            if (possibleTransitions.isEmpty()) {
-                trace.add("(" + currentState + ", " + symbol + ") -> ERROR");
+            if (t == null) {
+                trace.add("(" + currentState + ", " + symbol + ") -> error");
                 return trace;
             }
 
-            String nextState = possibleTransitions.get(0).getToState();
-
-            trace.add("(" + currentState + ", " + symbol + ") -> " + nextState);
-
-            currentState = nextState;
+            trace.add("(" + currentState + ", " + symbol + ") -> " + t.getToState());
+            currentState = t.getToState();
         }
 
         return trace;
     }
 
-
-
-    public void print() {
-        System.out.println("\nAUTOMATON");
+    /*
+    Imprime el autómata.
+    */
+   public void print() {
+        System.out.println("\nAUTOMATON DFA");
         System.out.println("States: " + states);
         System.out.println("Alphabet: " + alphabet);
         System.out.println("Initial State: " + initialState);

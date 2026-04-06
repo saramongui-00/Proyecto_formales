@@ -10,7 +10,6 @@ import co.edu.uptc.lenguajesformales.view.MainWindow;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +50,7 @@ public class AutomatonController implements ActionListener {
     public void traceAutomaton(){
         try {
             String inputToTrace = view.getInputToTrace();
-            List<String> detailedTrace = automaton.evaluateAFDWithDetailedTrace(inputToTrace);
+            List<String> detailedTrace = automaton.evaluateWithTrace(inputToTrace);
             view.initTraceDialog(detailedTrace.size(), detailedTrace);
         } catch (Exception e) {
             view.showError(e.getMessage());
