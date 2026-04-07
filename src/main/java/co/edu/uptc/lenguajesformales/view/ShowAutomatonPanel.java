@@ -9,9 +9,15 @@ import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.geom.Ellipse2D;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Panel que visualiza gráficamente el autómata usando la librería JUNG.
@@ -39,94 +45,87 @@ public class ShowAutomatonPanel extends JPanel {
             graph.addVertex(state);
         }
 
-        // Mapas para contar transiciones y almacenar símbolos
-        Map<String, Map<String, Integer>> transitionCount = new HashMap<>();
-        Map<String, String> transitionSymbols = new HashMap<>();
-
-        // Cuenta las transiciones por par de estados y símbolo
-        for (co.edu.uptc.lenguajesformales.dto.TransitionDTO t : automaton.getTransitions()) {
-            String key = t.getFromState() + "->" + t.getToState();
-            transitionCount.putIfAbsent(t.getFromState() + "->" + t.getToState(), new HashMap<>());
-            transitionCount.get(t.getFromState() + "->" + t.getToState())
-                    .put(t.getSymbol(), transitionCount.get(t.getFromState() + "->" + t.getToState())
-                            .getOrDefault(t.getSymbol(), 0) + 1);
-            transitionSymbols.put(key, t.getSymbol());
-        }
-
-        // Agrega las transiciones como aristas del grafo
-        int edgeId = 0;
-        for (co.edu.uptc.lenguajesformales.dto.TransitionDTO t : automaton.getTransitions()) {
-            String edgeName = t.getSymbol() + "_" + edgeId++;
-            graph.addEdge(edgeName, t.getFromState(), t.getToState());
-        }
-
-        // Procesa auto-transiciones (bucles) agregando aristas dummy si es necesario
-        Set<String> processedSelfLoops = new HashSet<>();
+        Map<String, List<String>> selfLoopSymbols = new LinkedHashMap<>();
         for (co.edu.uptc.lenguajesformales.dto.TransitionDTO t : automaton.getTransitions()) {
             if (t.getFromState().equals(t.getToState())) {
-                String state = t.getFromState();
-                if (!processedSelfLoops.contains(state)) {
-                    int count = 0;
-                    for (co.edu.uptc.lenguajesformales.dto.TransitionDTO t2 : automaton.getTransitions()) {
-                        if (t2.getFromState().equals(state) && t2.getToState().equals(state)) {
-                            count++;
-                        }
-                    }
-
-                    // Si solo hay una auto-transición, agrega una arista dummy para mejor visualización
-                    if (count == 1) {
-                        String dummyEdge = "dummy_" + state + "_" + edgeId++;
-                        graph.addEdge(dummyEdge, state, state);
-                    }
-                    processedSelfLoops.add(state);
-                }
+                selfLoopSymbols
+                        .computeIfAbsent(t.getFromState(), k -> new ArrayList<>())
+                        .add(t.getSymbol());
             }
         }
 
-        // Configura el layout circular del grafo
+        Map<String, String> edgeLabels = new HashMap<>();
+
+        int edgeId = 0;
+
+        // Agrega transiciones normales (no auto-transiciones)
+        for (co.edu.uptc.lenguajesformales.dto.TransitionDTO t : automaton.getTransitions()) {
+            if (!t.getFromState().equals(t.getToState())) {
+                String edgeName = "edge_" + edgeId++;
+                graph.addEdge(edgeName, t.getFromState(), t.getToState());
+                // Para transiciones entre estados distintos también agrupamos
+                // los símbolos si ya existe una arista entre ese par
+                edgeLabels.merge(edgeName, t.getSymbol(), (a, b) -> a + ", " + b);
+            }
+        }
+
+
+        for (Map.Entry<String, List<String>> entry : selfLoopSymbols.entrySet()) {
+            String state = entry.getKey();
+            String combinedLabel = String.join(", ", entry.getValue());
+
+            // Arista real con etiqueta combinada
+            String realEdge = "selfloop_" + state + "_" + edgeId++;
+            graph.addEdge(realEdge, state, state);
+            edgeLabels.put(realEdge, combinedLabel);
+
+            // Arista dummy para forzar a JUNG a abrir el bucle visualmente
+            String dummyEdge = "dummy_" + state + "_" + edgeId++;
+            graph.addEdge(dummyEdge, state, state);
+            edgeLabels.put(dummyEdge, null); // sin etiqueta
+        }
+
+        // ---------------------------------------------------------------
+        // Configurar layout y visualizador
+        // ---------------------------------------------------------------
         Layout<String, String> layout = new CircleLayout<>(graph);
         layout.setSize(new Dimension(500, 400));
         VisualizationViewer<String, String> vv = new VisualizationViewer<>(layout);
         vv.setPreferredSize(new Dimension(600, 450));
 
-        // Configura el mouse para poder mover y seleccionar elementos
         DefaultModalGraphMouse<String, String> graphMouse = new DefaultModalGraphMouse<>();
         graphMouse.setMode(ModalGraphMouse.Mode.PICKING);
         vv.setGraphMouse(graphMouse);
 
-        // Muestra las etiquetas de los vértices (estados)
+        // Etiquetas de vértices
         vv.getRenderContext().setVertexLabelTransformer(v -> v);
         vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
-
-        // Muestra las etiquetas de las aristas (símbolos), oculta las aristas dummy
+        
         vv.getRenderContext().setEdgeLabelTransformer(e -> {
-            if (e.toString().startsWith("dummy_")) {
-                return "";
-            }
-            return e.toString().split("_")[0];
+            String label = edgeLabels.get(e);
+            return label != null ? label : "";
         });
 
-        // Hace invisibles las aristas dummy
+        // Aristas dummy completamente invisibles
         vv.getRenderContext().setEdgeDrawPaintTransformer(e -> {
-            if (e.toString().startsWith("dummy_")) {
+            if (e.startsWith("dummy_")) {
                 return new Color(255, 255, 255, 0);
             }
             return Color.BLACK;
         });
 
-        // Renderizador personalizado para colorear estados iniciales y finales
+        // Colorear estados iniciales y finales
         FinalStateRenderer finalStateRenderer = new FinalStateRenderer(automaton);
         vv.getRenderContext().setVertexFillPaintTransformer(finalStateRenderer);
 
-        // Define la forma de los vértices como círculos
+        // Forma circular para los vértices
         vv.getRenderContext().setVertexShapeTransformer(v ->
                 new Ellipse2D.Double(-20, -20, 40, 40)
         );
 
-        // Asigna el renderizador personalizado a los vértices
         vv.getRenderer().setVertexRenderer(finalStateRenderer);
 
-        // Limpia el panel y agrega el visualizador
+        // Reemplaza el contenido del panel
         removeAll();
         setLayout(new BorderLayout());
         add(vv, BorderLayout.CENTER);
