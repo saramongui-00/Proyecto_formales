@@ -305,6 +305,7 @@ public class CreateAutomatonPanel extends JPanel {
     // Retorna la lista de transiciones del autómata
     public ArrayList<TransitionDTO> getTransitions() {
         ArrayList<TransitionDTO> transitions = new ArrayList<>();
+        List<String> states = getStates();
 
         for(int row = 0; row < model.getRowCount(); row++) {
 
@@ -333,7 +334,11 @@ public class CreateAutomatonPanel extends JPanel {
                 for(String d : dests) {
                     String dest = d.trim();
                     if(dest.isEmpty()) continue;
-                    if(!getStates().contains(d)) continue;
+                    if(!states.contains(dest)) {
+                        throw new IllegalArgumentException(
+                                "Transición inválida: el estado destino '" + dest +
+                                "' no existe (" + from + ", " + symbol + ").");
+                    }
 
                     transitions.add(new TransitionDTO(from, symbol, dest));
                 }

@@ -135,16 +135,20 @@ public class MainWindow extends JFrame {
     // Valida que el autómata tenga todos los elementos necesarios antes de generarlo
     public boolean generateAutomaton(){
         boolean val = false;
-        if (createAutomatonPanel.getStates().isEmpty()) {
-            showError("Debe existir al menos un estado");
-        } else if (createAutomatonPanel.getAlphabet().isEmpty()) {
-            showError("Debe existir al menos un símbolo en el alfabeto");
-        } else if (createAutomatonPanel.getTransitions().isEmpty()) {
-            showError("Debe existir al menos una transicion");
-        } else if(createAutomatonPanel.getFinalStates().isEmpty()) {
-            showError("Debe existir al menos un estado final");
-        } else{
-            val = true;
+        try {
+            if (createAutomatonPanel.getStates().isEmpty()) {
+                showError("Debe existir al menos un estado");
+            } else if (createAutomatonPanel.getAlphabet().isEmpty()) {
+                showError("Debe existir al menos un símbolo en el alfabeto");
+            } else if (createAutomatonPanel.getTransitions().isEmpty()) {
+                showError("Debe existir al menos una transicion");
+            } else if(createAutomatonPanel.getFinalStates().isEmpty()) {
+                showError("Debe existir al menos un estado final");
+            } else{
+                val = true;
+            }
+        } catch (IllegalArgumentException e) {
+            showError(e.getMessage());
         }
         return val;
     }
