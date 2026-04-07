@@ -7,7 +7,7 @@ import java.util.Map;
 
 /*
 Representa un Autómata Finito Determinista (DFA).
-Garanrtiza que para cada estado y símbolo exista como máximo una  transición.
+Garantiza que para cada estado y símbolo exista como máximo una  transición.
 */
 public class Automaton {
     
@@ -28,7 +28,7 @@ public class Automaton {
     }
 
     /*
-    Constructor completo.
+    Constructor con parámetros.
     */
     public Automaton(List<String> states, List<String> alphabet,
                      List<Transition> transitions, String initialState, List<String> finalStates) {
@@ -107,7 +107,23 @@ public class Automaton {
     Agrega una transición validando que no rompa el determinismo
     */
     public void addTransition(Transition transition){
-            for (Transition t : transitions) {
+        //Validar estado origen
+        if(!states.contains(transition.getFromState())){
+            throw new IllegalArgumentException("El estado origen no exite: " + transition.getFromState());
+        }
+        
+        //Validar estado destino
+         if(!states.contains(transition.getToState())){
+            throw new IllegalArgumentException("El estado destino no exite: " + transition.getToState());
+        }
+
+        //Validar símbolo
+        if(!alphabet.contains(transition.getSymbol())){
+            throw new IllegalArgumentException("El spimbolo no existe en el alfabeto: " + transition.getSymbol());
+        }
+
+        //Validar determinismo
+        for (Transition t : transitions) {
                 if (t.getFromState().equals(transition.getFromState()) &&
                     t.getSymbol().equals(transition.getSymbol())) {
                     throw new IllegalStateException(
@@ -119,6 +135,9 @@ public class Automaton {
         transitions.add(transition);
     }
 
+    /*
+    Agrega estados finales
+    */
     public void addFinalState(String state){
         if(!finalStates.contains(state)){
             finalStates.add(state);
@@ -152,6 +171,8 @@ public class Automaton {
         return finalStates.contains(state);
     }
 
+
+    /*Valida el DFA verificando que tenga estado inicial, final y transiciones únicas por pares*/
     public boolean validateDFA() {
         //Estado inicial
         if (initialState == null || !states.contains(initialState)) {
