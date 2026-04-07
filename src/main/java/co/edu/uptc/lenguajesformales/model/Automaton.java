@@ -119,7 +119,7 @@ public class Automaton {
 
         //Validar símbolo
         if(!alphabet.contains(transition.getSymbol())){
-            throw new IllegalArgumentException("El spimbolo no existe en el alfabeto: " + transition.getSymbol());
+            throw new IllegalArgumentException("El símbolo no existe en el alfabeto: " + transition.getSymbol());
         }
 
         //Validar determinismo
