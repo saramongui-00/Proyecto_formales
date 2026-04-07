@@ -159,12 +159,12 @@ public class Automaton {
     public void addTransition(Transition transition){
         //Validar estado origen
         if(!states.contains(transition.getFromState())){
-            throw new IllegalArgumentException("El estado origen no exite: " + transition.getFromState());
+            throw new IllegalArgumentException("El estado origen no existe: " + transition.getFromState());
         }
         
         //Validar estado destino
          if(!states.contains(transition.getToState())){
-            throw new IllegalArgumentException("El estado destino no exite: " + transition.getToState());
+            throw new IllegalArgumentException("El estado destino no existe: " + transition.getToState());
         }
 
         //Validar símbolo
