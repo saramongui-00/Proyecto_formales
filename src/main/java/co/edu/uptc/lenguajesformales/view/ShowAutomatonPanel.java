@@ -85,9 +85,7 @@ public class ShowAutomatonPanel extends JPanel {
             edgeLabels.put(dummyEdge, null); // sin etiqueta
         }
 
-        // ---------------------------------------------------------------
         // Configurar layout y visualizador
-        // ---------------------------------------------------------------
         Layout<String, String> layout = new CircleLayout<>(graph);
         layout.setSize(new Dimension(500, 400));
         VisualizationViewer<String, String> vv = new VisualizationViewer<>(layout);
@@ -100,7 +98,7 @@ public class ShowAutomatonPanel extends JPanel {
         // Etiquetas de vértices
         vv.getRenderContext().setVertexLabelTransformer(v -> v);
         vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
-        
+
         vv.getRenderContext().setEdgeLabelTransformer(e -> {
             String label = edgeLabels.get(e);
             return label != null ? label : "";
