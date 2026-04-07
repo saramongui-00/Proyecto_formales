@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-/*
-Representa un Autómata Finito Determinista (DFA).
-Garantiza que para cada estado y símbolo exista como máximo una  transición.
-*/
+/**
+ * Representa un Autómata Finito Determinista (DFA).
+ * Garantiza que para cada estado y símbolo exista como máximo una transición.
+ */
 public class Automaton {
     
     private List<String> states;
@@ -17,9 +16,9 @@ public class Automaton {
     private String initialState;
     private List<String> finalStates;
     
-    /*
-    Constructor vacío.
-    */
+    /**
+     * Constructor vacío.
+     */
     public Automaton() {
         states =new ArrayList<>();
         alphabet = new ArrayList<>();
@@ -27,9 +26,14 @@ public class Automaton {
         finalStates = new ArrayList<>();
     }
 
-    /*
-    Constructor con parámetros.
-    */
+    /**
+     * Constructor con parámetros.
+     * @param states Lista de estados del autómata.
+     * @param alphabet Alfabeto del autómata.
+     * @param transitions Lista de transiciones.
+     * @param initialState Estado inicial.
+     * @param finalStates Lista de estados finales.
+     */
     public Automaton(List<String> states, List<String> alphabet,
                      List<Transition> transitions, String initialState, List<String> finalStates) {
         this.states = states;
@@ -40,59 +44,104 @@ public class Automaton {
     }
 
 
+    /**
+     * Obtiene la lista de estados.
+     * @return Lista de estados.
+     */
     public List<String> getStates() {
         return states;
     }
 
+    /**
+     * Establece la lista de estados.
+     * @param states Lista de estados.
+     */
     public void setStates(List<String> states) {
         this.states = states;
     }
 
+    /**
+     * Obtiene el alfabeto.
+     * @return Lista del alfabeto.
+     */
     public List<String> getAlphabet() {
         return alphabet;
     }
 
+    /**
+     * Establece el alfabeto.
+     * @param alphabet Lista del alfabeto.
+     */
     public void setAlphabet(List<String> alphabet) {
         this.alphabet = alphabet;
     }
 
+    /**
+     * Obtiene las transiciones.
+     * @return Lista de transiciones.
+     */
     public List<Transition> getTransitions() {
         return transitions;
     }
 
+    /**
+     * Establece las transiciones.
+     * @param transitions Lista de transiciones.
+     */
     public void setTransitions(List<Transition> transitions) {
         this.transitions = transitions;
     }
 
+    /**
+     * Obtiene el estado inicial.
+     * @return Estado inicial.
+     */
     public String getInitialState() {
         return initialState;
     }
 
+    /**
+     * Establece el estado inicial.
+     * @param initialState Estado inicial.
+     */
     public void setInitialState(String initialState) {
         this.initialState = initialState;
     }
 
+    /**
+     * Obtiene los estados finales.
+     * @return Lista de estados finales.
+     */
     public List<String> getFinalStates() {
         return finalStates;
     }
 
+    /**
+     * Establece los estados finales.
+     * @param finalStates Lista de estados finales.
+     */
     public void setFinalStates(List<String> finalStates) {
         this.finalStates = finalStates;
     }
 
-    /*
-    Métodos básicos
-    */
+    /**
+     * Métodos básicos
+     */
 
+    /**
+     * Agrega un estado si no existe.
+     * @param state Estado a agregar.
+     */
     public void addState(String state){
         if(!states.contains(state)){
             states.add(state);
         }
     }
 
-    /*
-    Agrega un símbolo al alfabeto.
-    */
+    /**
+     * Agrega un símbolo al alfabeto.
+     * @param symbol Símbolo a agregar.
+     */
     public void addSymbol(String symbol){
         String normalizedSymbol = symbol == null ? "" : symbol.trim();
         if(normalizedSymbol.isEmpty() || isEpsilonSymbol(normalizedSymbol)){
@@ -103,9 +152,10 @@ public class Automaton {
         }
     }
     
-    /*
-    Agrega una transición validando que no rompa el determinismo
-    */
+    /**
+     * Agrega una transición validando que no rompa el determinismo
+     * @param transition Transición a agregar.
+     */
     public void addTransition(Transition transition){
         //Validar estado origen
         if(!states.contains(transition.getFromState())){
@@ -135,18 +185,22 @@ public class Automaton {
         transitions.add(transition);
     }
 
-    /*
-    Agrega estados finales
-    */
+    /**
+     * Agrega estados finales
+     * @param state Estado final a agregar.
+     */
     public void addFinalState(String state){
         if(!finalStates.contains(state)){
             finalStates.add(state);
         }
     }
 
-    /*
-    Obtiene la transición única para un estado y símbolo.
-    */
+    /**
+     * Obtiene la transición única para un estado y símbolo.
+     * @param state Estado.
+     * @param symbol Símbolo.
+     * @return Transición correspondiente, o null si no existe.
+     */
     public Transition getTransition(String state, String symbol){
         for(Transition t : transitions){
             if(t.getFromState().equals(state) && t.getSymbol().equals(symbol)){
@@ -156,23 +210,34 @@ public class Automaton {
         return null;
     }
 
-    /*Verifica si el estado existe */
+    /** Verifica si el estado existe 
+     * @param state Estado a verificar.
+     * @return true si existe, false en caso contrario.
+     */
     public boolean containsState(String state){
         return states.contains(state);
     }
 
-    /*Verifica que el simbolo exista */
+    /** Verifica que el simbolo exista 
+     * @param symbol Símbolo a verificar.
+     * @return true si existe, false en caso contrario.
+     */
     public boolean containsSymbol(String symbol){
         return alphabet.contains(symbol);
     }
 
-    /*Verifica que exista al menos un estado de aceptación */
+    /** Verifica que exista al menos un estado de aceptación 
+     * @param state Estado a verificar.
+     * @return true si es estado final, false en caso contrario.
+     */
     public boolean isFinalState(String state){
         return finalStates.contains(state);
     }
 
 
-    /*Valida el DFA verificando que tenga estado inicial, final y transiciones únicas por pares*/
+    /** Valida el DFA verificando que tenga estado inicial, final y transiciones únicas por pares 
+     * @return true si es válido, false en caso contrario.
+     */
     public boolean validateDFA() {
         //Estado inicial
         if (initialState == null || !states.contains(initialState)) {
@@ -221,18 +286,22 @@ public class Automaton {
         return "ε".equals(symbol) || "epsilon".equalsIgnoreCase(symbol);
     }
 
-    /*
-    Evalúa una cadena en el DFA 
-    */
+    /**
+     * Evalúa una cadena en el DFA 
+     * @param input Cadena a evaluar.
+     * @return true si es aceptada, false en caso contrario.
+     */
     public boolean evaluateAutomaton(String input) {
         if (!validateDFA()) throw new IllegalStateException("DFA inválido");
         return evaluateDFA(input);
 
     }
 
-    /*
-    Evalúa múltiples cadenas (máximo 10).
-    */
+    /**
+     * Evalúa múltiples cadenas (máximo 10).
+     * @param inputs Lista de cadenas a evaluar.
+     * @return Mapa con resultados de evaluación.
+     */
     public Map<String, Boolean> evaluateBatchAutomaton(List<String> inputs) {
         if (inputs == null || inputs.isEmpty()) throw new IllegalArgumentException("Debe ingresar al menos una cadena");
         if (inputs.size() > 10) throw new IllegalArgumentException("Se permiten máximo 10 cadenas");
@@ -242,9 +311,11 @@ public class Automaton {
         return results;
     }
 
-    /*
-    Lógica principal de evaluación del DFA
-    */
+    /**
+     * Lógica principal de evaluación del DFA
+     * @param input Cadena a evaluar.
+     * @return true si es aceptada, false en caso contrario.
+     */
     public boolean evaluateDFA(String input){
 
         if (input == null) {
@@ -270,9 +341,11 @@ public class Automaton {
             return isFinalState(currentState);
         }
 
-    /*
-    Devuelve el recorrido paso a paso del DFA 
-    */
+    /**
+     * Devuelve el recorrido paso a paso del DFA 
+     * @param input Cadena a evaluar.
+     * @return Lista con el trace del recorrido.
+     */
     public List<String> evaluateWithTrace(String input) {
 
         List<String> trace = new ArrayList<>();
@@ -300,9 +373,9 @@ public class Automaton {
         return trace;
     }
 
-    /*
-    Imprime el autómata.
-    */
+    /**
+     * Imprime el autómata.
+     */
    public void print() {
         System.out.println("\nAUTOMATON DFA");
         System.out.println("States: " + states);

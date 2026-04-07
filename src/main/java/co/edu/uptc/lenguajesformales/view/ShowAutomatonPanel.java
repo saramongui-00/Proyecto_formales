@@ -13,16 +13,23 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.util.*;
 
-// Panel que visualiza gráficamente el autómata usando la librería JUNG
+/**
+ * Panel que visualiza gráficamente el autómata usando la librería JUNG.
+ */
 public class ShowAutomatonPanel extends JPanel {
 
-    // Constructor que configura el layout y borde del panel
+    /**
+     * Constructor que configura el layout y borde del panel.
+     */
     public ShowAutomatonPanel() {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createTitledBorder("Autómata"));
     }
 
-    // Recibe un autómata y lo dibuja en el panel
+    /**
+     * Recibe un autómata y lo dibuja en el panel.
+     * @param automaton Datos del autómata a mostrar.
+     */
     public void setAutomaton(AutomatonDTO automaton) {
         // Crea un grafo dirigido multigrafo
         DirectedSparseMultigraph<String, String> graph = new DirectedSparseMultigraph<>();

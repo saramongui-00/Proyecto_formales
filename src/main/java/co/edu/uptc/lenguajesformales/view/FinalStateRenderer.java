@@ -13,17 +13,26 @@ import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
-// Renderizador personalizado para los estados de un autómata, colorea estados iniciales y finales
+/**
+ * Renderizador personalizado para los estados de un autómata, colorea estados iniciales y finales.
+ */
 public class FinalStateRenderer extends BasicVertexRenderer<String, String> implements Function<String, Paint> {
 
     private final AutomatonDTO automaton;
 
-    // Constructor que recibe el autómata para conocer sus estados inicial y finales
+    /**
+     * Constructor que recibe el autómata para conocer sus estados inicial y finales.
+     * @param automaton DTO del autómata.
+     */
     public FinalStateRenderer(AutomatonDTO automaton) {
         this.automaton = automaton;
     }
 
-    // Define el color de cada estado: verde para inicial, rojo para final, blanco para los demás
+    /**
+     * Define el color de cada estado: verde para inicial, rojo para final, blanco para los demás.
+     * @param state Estado a pintar.
+     * @return Paint con el color correspondiente.
+     */
     @Override
     public Paint apply(String state) {
         if (state.equals(automaton.getInitialState())) {
@@ -35,7 +44,12 @@ public class FinalStateRenderer extends BasicVertexRenderer<String, String> impl
         return Color.WHITE;
     }
 
-    // Dibuja un círculo interior adicional para los estados finales
+    /**
+     * Dibuja un círculo interior adicional para los estados finales.
+     * @param rc RenderContext para el dibujo.
+     * @param vertex Vertice actual.
+     * @param shape Forma del vértice.
+     */
     @Override
     protected void paintShapeForVertex(RenderContext<String, String> rc, String vertex, Shape shape) {
         super.paintShapeForVertex(rc, vertex, shape);

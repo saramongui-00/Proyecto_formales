@@ -1,7 +1,10 @@
 package co.edu.uptc.lenguajesformales.view;
 
 import java.awt.*;
-// Clase que contiene colores globales reutilizables en toda la interfaz gráfica
+
+/**
+ * Clase que contiene colores globales reutilizables en toda la interfaz gráfica.
+ */
 public class Global {
     protected static final Color green = new Color(78,167,46);
     protected static final Color blue = new Color(33,95,154);
